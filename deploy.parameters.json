@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "value": "apimdemo-vnet"
+        },
+        "vnetAddressSpace": {
+            "value": "10.1.0.0/16"
+        },
+        "appgwSubnet": {
+            "value": "10.1.1.0/24"
+        },
+        "apimSubnet": {
+            "value": "10.1.2.0/24"
+        },
+        "jumpboxSubnet": {
+            "value": "10.1.3.0/24"
+        },
+        "publisherName": {
+            "value": "Hugo Girard"
+        },
+        "publisherEmail": {
+            "value": "hugirard@microsoft.com"
+        },
+        "adminUsername": {
+            "value": "pladmin" // TODO: Fill in parameter value
+        },
+        "adminPassword": {
+            "value": "blackberry01&" // TODO: Fill in parameter value
+        }
+    }
+}

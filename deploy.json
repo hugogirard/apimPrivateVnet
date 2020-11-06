@@ -1,0 +1,431 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "type": "string",
+      "defaultValue": "apimdemo-vnet"
+    },
+    "vnetAddressSpace": {
+      "type": "string",
+      "defaultValue": "10.1.0.0/16"
+    },
+    "appgwSubnet": {
+      "type": "string",
+      "defaultValue": "10.1.1.0/24"
+    },
+    "apimSubnet": {
+      "type": "string",
+      "defaultValue": "10.1.2.0/24"
+    },
+    "jumpboxSubnet": {
+      "type": "string",
+      "defaultValue": "10.1.3.0/24"
+    },
+    "publisherName": {
+      "type": "string",
+      "defaultValue": "Hugo Girard"
+    },
+    "publisherEmail": {
+      "type": "string",
+      "defaultValue": "hugirard@microsoft.com"
+    },
+    "adminUsername": {
+      "type": "secureString"
+    },
+    "adminPassword": {
+      "type": "secureString"
+    }
+  },
+  "functions": [],
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "network",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vnetName": {
+            "value": "[parameters('vnetName')]"
+          },
+          "vnetAddressSpace": {
+            "value": "[parameters('vnetAddressSpace')]"
+          },
+          "appgwSubnet": {
+            "value": "[parameters('appgwSubnet')]"
+          },
+          "apimSubnet": {
+            "value": "[parameters('apimSubnet')]"
+          },
+          "jumpboxSubnet": {
+            "value": "[parameters('jumpboxSubnet')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "vnetName": {
+              "type": "string"
+            },
+            "vnetAddressSpace": {
+              "type": "string"
+            },
+            "appgwSubnet": {
+              "type": "string"
+            },
+            "apimSubnet": {
+              "type": "string"
+            },
+            "jumpboxSubnet": {
+              "type": "string"
+            }
+          },
+          "functions": [],
+          "variables": {
+            "location": "[resourceGroup().location]",
+            "appgwSubnetName": "appgwSubnet",
+            "apimSubnetName": "apimSubnet",
+            "jumpboxSubnetName": "jumpboxSubnet"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2020-06-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[variables('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('vnetAddressSpace')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[variables('appgwSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('appgwSubnet')]"
+                    }
+                  },
+                  {
+                    "name": "[variables('apimSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('apimSubnet')]"
+                    }
+                  },
+                  {
+                    "name": "[variables('jumpboxSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('jumpboxSubnet')]"
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "outputs": {
+            "vnetId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+            },
+            "subnetJumpbox": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))).subnets[2].id]"
+            },
+            "subnetApim": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))).subnets[1].id]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "apim",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "publisherName": {
+            "value": "[parameters('publisherName')]"
+          },
+          "publisherEmail": {
+            "value": "[parameters('publisherEmail')]"
+          },
+          "subnetResourceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network'), '2019-10-01').outputs.subnetApim.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "publisherName": {
+              "type": "string"
+            },
+            "publisherEmail": {
+              "type": "string"
+            },
+            "subnetResourceId": {
+              "type": "string"
+            }
+          },
+          "functions": [],
+          "variables": {
+            "suffix": "[uniqueString(resourceGroup().id)]",
+            "apimName": "[concat('apim-', variables('suffix'))]",
+            "location": "[resourceGroup().location]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ApiManagement/service",
+              "apiVersion": "2019-12-01",
+              "name": "[variables('apimName')]",
+              "location": "[variables('location')]",
+              "properties": {
+                "virtualNetworkConfiguration": {
+                  "subnetResourceId": "[parameters('subnetResourceId')]"
+                },
+                "virtualNetworkType": "Internal",
+                "publisherEmail": "[parameters('publisherEmail')]",
+                "publisherName": "[parameters('publisherName')]"
+              },
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "sku": {
+                "name": "Developer",
+                "capacity": 1
+              }
+            }
+          ],
+          "outputs": {
+            "apimIdentity": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', variables('apimName')), '2019-12-01', 'full').identity.principalId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'network')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "vault",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "principalIdApim": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'apim'), '2019-10-01').outputs.apimIdentity.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "principalIdApim": {
+              "type": "string"
+            }
+          },
+          "functions": [],
+          "variables": {
+            "suffix": "[uniqueString(resourceGroup().id)]",
+            "vaultName": "[concat('vault-', variables('suffix'))]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2019-09-01",
+              "name": "[variables('vaultName')]",
+              "location": "[resourceGroup().location]",
+              "properties": {
+                "tenantId": "[subscription().tenantId]",
+                "sku": {
+                  "family": "A",
+                  "name": "standard"
+                },
+                "accessPolicies": [
+                  {
+                    "tenantId": "[subscription().tenantId]",
+                    "objectId": "[parameters('principalIdApim')]",
+                    "permissions": {
+                      "secrets": [
+                        "get",
+                        "list"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'apim')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "jumpbox",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "subnetId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network'), '2019-10-01').outputs.subnetJumpbox.value]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "subnetId": {
+              "type": "string"
+            },
+            "adminUsername": {
+              "type": "secureString"
+            },
+            "adminPassword": {
+              "type": "secureString"
+            }
+          },
+          "functions": [],
+          "variables": {
+            "location": "[resourceGroup().location]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2020-06-01",
+              "name": "jumpboxpip",
+              "location": "[variables('location')]",
+              "properties": {
+                "publicIPAllocationMethod": "Dynamic"
+              },
+              "sku": {
+                "name": "Basic"
+              }
+            },
+            {
+              "type": "Microsoft.Network/networkInterfaces",
+              "apiVersion": "2020-06-01",
+              "name": "jumpnic",
+              "location": "[variables('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'jumpboxpip')]"
+                      },
+                      "subnet": {
+                        "id": "[parameters('subnetId')]"
+                      }
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', 'jumpboxpip')]"
+              ]
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachines",
+              "apiVersion": "2020-06-01",
+              "name": "jumpbox",
+              "location": "[variables('location')]",
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "Standard_B1ms"
+                },
+                "osProfile": {
+                  "computerName": "jumpbox",
+                  "adminUsername": "[parameters('adminUsername')]",
+                  "adminPassword": "[parameters('adminPassword')]",
+                  "linuxConfiguration": {
+                    "disablePasswordAuthentication": false
+                  }
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "publisher": "Canonical",
+                    "offer": "UbuntuServer",
+                    "sku": "18.04-LTS",
+                    "version": "latest"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage"
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces', 'jumpnic')]"
+                    }
+                  ]
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces', 'jumpnic')]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', 'jumpboxpip')]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'network')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "dns",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "functions": [],
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2018-09-01",
+              "name": "hugirard.com",
+              "location": "[resourceGroup().location]"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
