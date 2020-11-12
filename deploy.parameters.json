@@ -18,16 +18,22 @@
             "value": "10.1.3.0/24"
         },
         "publisherName": {
-            "value": "Hugo Girard"
+            "value": ""
         },
         "publisherEmail": {
-            "value": "hugirard@microsoft.com"
+            "value": ""
         },
         "adminUsername": {
-            "value": "pladmin" // TODO: Fill in parameter value
+            "value": ""
         },
         "adminPassword": {
-            "value": "blackberry01&" // TODO: Fill in parameter value
+            "value": ""
+        },
+        "hostname": {
+            "value": ""
+        },
+        "vaultName": {
+            "value": ""
         }
     }
 }

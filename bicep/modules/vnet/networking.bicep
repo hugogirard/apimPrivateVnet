@@ -44,3 +44,4 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
 output vnetId string = vnet.id
 output subnetJumpbox string = vnet.properties.subnets[2].id
 output subnetApim string = vnet.properties.subnets[1].id
+output subnetAppGw string = vnet.properties.subnets[0].id

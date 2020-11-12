@@ -3,32 +3,31 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vnetName": {
-      "type": "string",
-      "defaultValue": "apimdemo-vnet"
+      "type": "string"
     },
     "vnetAddressSpace": {
-      "type": "string",
-      "defaultValue": "10.1.0.0/16"
+      "type": "string"
     },
     "appgwSubnet": {
-      "type": "string",
-      "defaultValue": "10.1.1.0/24"
+      "type": "string"
     },
     "apimSubnet": {
-      "type": "string",
-      "defaultValue": "10.1.2.0/24"
+      "type": "string"
     },
     "jumpboxSubnet": {
-      "type": "string",
-      "defaultValue": "10.1.3.0/24"
+      "type": "string"
     },
     "publisherName": {
-      "type": "string",
-      "defaultValue": "Hugo Girard"
+      "type": "string"
     },
     "publisherEmail": {
-      "type": "string",
-      "defaultValue": "hugirard@microsoft.com"
+      "type": "string"
+    },
+    "hostname": {
+      "type": "string"
+    },
+    "vaultName": {
+      "type": "string"
     },
     "adminUsername": {
       "type": "secureString"
@@ -139,6 +138,10 @@
             "subnetApim": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))).subnets[1].id]"
+            },
+            "subnetAppGw": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))).subnets[0].id]"
             }
           }
         }
@@ -161,7 +164,7 @@
             "value": "[parameters('publisherEmail')]"
           },
           "subnetResourceId": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network'), '2019-10-01').outputs.subnetApim.value]"
+            "value": "[reference(extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'network'), '2019-10-01').outputs.subnetApim.value]"
           }
         },
         "template": {
@@ -211,12 +214,20 @@
             "apimIdentity": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.ApiManagement/service', variables('apimName')), '2019-12-01', 'full').identity.principalId]"
+            },
+            "apimhostname": {
+              "type": "string",
+              "value": "[concat(variables('apimName'), '.net')]"
+            },
+            "apimPrivateIp": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ApiManagement/service', variables('apimName'))).privateIPAddresses[0]]"
             }
           }
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'network')]"
+        "[extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'network')]"
       ]
     },
     {
@@ -230,7 +241,10 @@
         "mode": "Incremental",
         "parameters": {
           "principalIdApim": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'apim'), '2019-10-01').outputs.apimIdentity.value]"
+            "value": "[reference(extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'apim'), '2019-10-01').outputs.apimIdentity.value]"
+          },
+          "vaultName": {
+            "value": "[parameters('vaultName')]"
           }
         },
         "template": {
@@ -239,18 +253,28 @@
           "parameters": {
             "principalIdApim": {
               "type": "string"
+            },
+            "vaultName": {
+              "type": "string"
             }
           },
           "functions": [],
           "variables": {
-            "suffix": "[uniqueString(resourceGroup().id)]",
-            "vaultName": "[concat('vault-', variables('suffix'))]"
+            "defaultCertName": "certificateSecret",
+            "identityName": "apggwuseridentity",
+            "location": "[resourceGroup().location]"
           },
           "resources": [
             {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2018-11-30",
+              "name": "[variables('identityName')]",
+              "location": "[variables('location')]"
+            },
+            {
               "type": "Microsoft.KeyVault/vaults",
               "apiVersion": "2019-09-01",
-              "name": "[variables('vaultName')]",
+              "name": "[parameters('vaultName')]",
               "location": "[resourceGroup().location]",
               "properties": {
                 "tenantId": "[subscription().tenantId]",
@@ -268,15 +292,115 @@
                         "list"
                       ]
                     }
+                  },
+                  {
+                    "tenantId": "[subscription().tenantId]",
+                    "objectId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))).principalId]",
+                    "permissions": {
+                      "secrets": [
+                        "get",
+                        "list"
+                      ]
+                    }
                   }
                 ]
-              }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "userIdentityId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'apim')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "dns",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[parameters('hostname')]"
+          },
+          "apimIpAddress": {
+            "value": "[reference(extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'apim'), '2019-10-01').outputs.apimPrivateIp.value]"
+          },
+          "vnetId": {
+            "value": "[reference(extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'network'), '2019-10-01').outputs.vnetId.value]"
+          },
+          "vnetName": {
+            "value": "[parameters('vnetName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "dnsZoneName": {
+              "type": "string"
+            },
+            "apimIpAddress": {
+              "type": "string"
+            },
+            "vnetName": {
+              "type": "string"
+            },
+            "vnetId": {
+              "type": "string"
+            }
+          },
+          "functions": [],
+          "resources": [
+            {
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2018-09-01",
+              "name": "[parameters('dnsZoneName')]",
+              "location": "global",
+              "properties": {}
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/SOA",
+              "apiVersion": "2018-09-01",
+              "name": "[concat(parameters('dnsZoneName'), '/@')]",
+              "properties": {},
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('dnsZoneName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2018-09-01",
+              "name": "[concat(parameters('dnsZoneName'), '/', parameters('vnetName'))]",
+              "location": "global",
+              "properties": {
+                "registrationEnabled": true,
+                "virtualNetwork": {
+                  "id": "[parameters('vnetId')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('dnsZoneName'))]"
+              ]
             }
           ]
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'apim')]"
+        "[extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'apim')]",
+        "[extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'network')]"
       ]
     },
     {
@@ -296,7 +420,7 @@
             "value": "[parameters('adminPassword')]"
           },
           "subnetId": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', 'network'), '2019-10-01').outputs.subnetJumpbox.value]"
+            "value": "[reference(extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'network'), '2019-10-01').outputs.subnetJumpbox.value]"
           }
         },
         "template": {
@@ -400,32 +524,18 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'network')]"
+        "[extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'network')]"
       ]
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2019-10-01",
-      "name": "dns",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "functions": [],
-          "resources": [
-            {
-              "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2018-09-01",
-              "name": "hugirard.com",
-              "location": "[resourceGroup().location]"
-            }
-          ]
-        }
-      }
     }
-  ]
+  ],
+  "outputs": {
+    "gwSubnetId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'network'), '2019-10-01').outputs.subnetAppGw.value]"
+    },
+    "identityId": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'vault'), '2019-10-01').outputs.userIdentityId.value]"
+    }
+  }
 }

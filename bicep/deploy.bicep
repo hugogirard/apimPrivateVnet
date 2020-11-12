@@ -1,10 +1,13 @@
-param vnetName string = 'apimdemo-vnet'
-param vnetAddressSpace string = '10.1.0.0/16'
-param appgwSubnet string = '10.1.1.0/24'
-param apimSubnet string = '10.1.2.0/24'
-param jumpboxSubnet string = '10.1.3.0/24'
-param publisherName string = 'Hugo Girard'
-param publisherEmail string = 'hugirard@microsoft.com'
+param vnetName string
+param vnetAddressSpace string
+param appgwSubnet string
+param apimSubnet string
+param jumpboxSubnet string
+param publisherName string
+param publisherEmail string
+param hostname string
+param vaultName string
+
 param adminUsername string {
   secure: true
 }
@@ -12,7 +15,7 @@ param adminPassword string {
   secure: true
 }
 
-module network './networking.bicep' = {
+module network './modules/vnet/networking.bicep' = {
     name: 'network'
     params: {
         vnetName: vnetName
@@ -23,7 +26,7 @@ module network './networking.bicep' = {
     }
 }
 
-module apim './apim.bicep' = {
+module apim './modules/apim/apim.bicep' = {
     name: 'apim'
     dependsOn: [
         network
@@ -35,17 +38,32 @@ module apim './apim.bicep' = {
     }
 }
 
-module vault './keyvault.bicep' = {
+module vault './modules/vault/keyvault.bicep' = {
     name: 'vault'
     dependsOn: [
         apim
     ]
     params: {
         principalIdApim: apim.outputs.apimIdentity
+        vaultName: vaultName
     }
 }
 
-module jumpbox './jumpbox.bicep' = {
+module dns './modules/dns/dns.bicep' = {
+    name: 'dns'
+    dependsOn: [
+        apim
+        network
+    ]
+    params: {
+        dnsZoneName: hostname
+        apimIpAddress: apim.outputs.apimPrivateIp
+        vnetId: network.outputs.vnetId
+        vnetName: vnetName
+    }
+}
+
+module jumpbox './modules/compute/jumpbox.bicep' = {
     name: 'jumpbox'
     dependsOn: [
         network
@@ -57,6 +75,5 @@ module jumpbox './jumpbox.bicep' = {
     }
 }
 
-module dns './dnsZone.bicep' = {
-    name: 'dns'    
-}
+output gwSubnetId string = network.outputs.subnetAppGw
+output identityId string = vault.outputs.userIdentityId

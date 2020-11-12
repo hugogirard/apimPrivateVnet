@@ -1,0 +1,189 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "gwSubnetId": {
+      "type": "string"
+    },
+    "certLink": {
+      "type": "string"
+    },
+    "apiGwHostname": {
+      "type": "string"
+    },
+    "identityId": {
+      "type": "string"
+    }
+  },
+  "functions": [],
+  "variables": {
+    "suffix": "[uniqueString(resourceGroup().id)]",
+    "location": "[resourceGroup().location]",
+    "appgwName": "[concat('appgwprv-', variables('suffix'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2020-06-01",
+      "name": "gwpip",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4
+      }
+    },
+    {
+      "type": "Microsoft.Network/applicationGateways",
+      "apiVersion": "2020-06-01",
+      "name": "[variables('appgwName')]",
+      "location": "[variables('location')]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('identityId')]": {}
+        }
+      },
+      "properties": {
+        "sku": {
+          "name": "WAF_v2",
+          "tier": "WAF_v2",
+          "capacity": 2
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "appGatewayConfig",
+            "properties": {
+              "subnet": {
+                "id": "[parameters('gwSubnetId')]"
+              }
+            }
+          }
+        ],
+        "sslCertificates": [
+          {
+            "name": "httpListener",
+            "properties": {
+              "keyVaultSecretId": "[parameters('certLink')]"
+            }
+          }
+        ],
+        "trustedRootCertificates": [],
+        "frontendIPConfigurations": [
+          {
+            "name": "appGwPublicFrontendIp",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'gwpip')]"
+              }
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "port_443",
+            "properties": {
+              "port": 443
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "apiGatewayPool",
+            "properties": {
+              "backendAddresses": [
+                {
+                  "fqdn": "[parameters('apiGwHostname')]"
+                }
+              ]
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "apiGW",
+            "properties": {
+              "port": 80,
+              "protocol": "Http",
+              "cookieBasedAffinity": "Disabled",
+              "pickHostNameFromBackendAddress": false,
+              "requestTimeout": 20,
+              "probe": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/probes', variables('appgwName'), 'probeAppGw')]"
+              }
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "httpListener",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('appgwName'), 'appGwPublicFrontendIp')]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('appgwName'), 'port_443')]"
+              },
+              "sslCertificate": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/sslCertificates', variables('appgwName'), 'httpListener')]"
+              },
+              "hostNames": [],
+              "protocol": "Https",
+              "requireServerNameIndication": false
+            }
+          }
+        ],
+        "requestRoutingRules": [
+          {
+            "name": "defaultRoutingRule",
+            "properties": {
+              "ruleType": "Basic",
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', variables('appgwName'), 'httpListener')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', variables('appgwName'), 'apiGatewayPool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', variables('appgwName'), 'apiGW')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "probeAppGw",
+            "properties": {
+              "protocol": "Http",
+              "host": "[parameters('apiGwHostname')]",
+              "path": "/status-0123456789abcdef",
+              "interval": 30,
+              "timeout": 30,
+              "unhealthyThreshold": 3,
+              "pickHostNameFromBackendHttpSettings": false,
+              "minServers": 0,
+              "match": {}
+            }
+          }
+        ],
+        "enableHttp2": false,
+        "webApplicationFirewallConfiguration": {
+          "enabled": true,
+          "firewallMode": "Prevention",
+          "ruleSetType": "OWASP",
+          "ruleSetVersion": "3.1",
+          "requestBodyCheck": true,
+          "maxRequestBodySizeInKb": 128,
+          "fileUploadLimitInMb": 100
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'gwpip')]"
+      ]
+    }
+  ]
+}
