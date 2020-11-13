@@ -50,8 +50,6 @@ Now do a nslookup from your computer, this should use the public ip of the Appli
 
 ![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionpublic.png)
 
-** BE SURE WHEN YOU CONFIGURE API DEFINITION IN APIM TO SET THE URL SCHEME TO HTTP, RIGHT NOW NO END TO END SSL IS DONE AND THIS STOP AT APP GATEWAY **
-
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/nossl.png)
+** BE SURE WHEN YOU CONFIGURE API DEFINITION IN APIM TO SET THE URL SCHEME TO BOTH, RIGHT NOW NO END TO END SSL IS DONE AND THIS STOP AT APP GATEWAY. **
 
 
