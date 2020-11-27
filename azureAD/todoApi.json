@@ -1,0 +1,12 @@
+[
+    {
+      "adminConsentDescription": "Give all access to the todo api",
+      "adminConsentDisplayName": "Todo.All",
+      "id": "85b8f1a0-0733-47dd-9af4-cb7221dbcb73",
+      "isEnabled": true,
+      "type": "Admin",
+      "userConsentDescription": null,
+      "userConsentDisplayName": null,
+      "value": "Access"
+    }
+  ]
