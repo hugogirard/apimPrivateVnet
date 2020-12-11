@@ -1,0 +1,57 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "value": "apimdemo-vnet"
+        },
+        "vnetAddressSpace": {
+            "value": "10.1.0.0/16"
+        },
+        "appgwSubnet": {
+            "value": "10.1.1.0/24"
+        },
+        "apimSubnet": {
+            "value": "10.1.2.0/24"
+        },
+        "jumpboxSubnet": {
+            "value": "10.1.3.0/24"
+        },
+        "webServerSubnet": {
+            "value": "10.1.4.0/24"
+        },
+        "gwSubnet": {
+            "value": "10.1.5.0/27"
+        },
+        "onpremVnetAddressSpace": {
+            "value": "10.2.0.0/16"
+        },
+        "onpremGatewayAddressSpace": {
+            "value": "10.2.1.0/24"
+        },
+        "onpremWebAddressSpace": {
+            "value": "10.2.2.0/27"
+        },
+        "publisherName": {
+            "value": "__publisherName__"
+        },
+        "publisherEmail": {
+            "value": "__publisherEmail__"
+        },
+        "adminUsernameSql": {
+            "value": "__adminUsernameSql__"
+        },
+        "adminPasswordSql": {
+            "value": "__adminPasswordSql__"
+        },
+        "hostname": {
+            "value": "__hostname__"
+        },
+        "adminUsername": {
+            "value": "__adminUsername__"
+        },
+        "adminPassword": {
+            "value": "__adminPassword__"
+        }
+    }
+}

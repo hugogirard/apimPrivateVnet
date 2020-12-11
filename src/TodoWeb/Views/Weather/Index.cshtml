@@ -1,0 +1,25 @@
+﻿@model IEnumerable<TodoWeb.Models.WeatherForecast>
+
+<h2>Weather Detail</h2>
+
+<table class="table">
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Summary)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TemperatureC)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TemperatureF)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

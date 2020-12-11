@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "gwSubnetId": {
+            "value": "/subscriptions/daf89b62-86a4-4655-a729-38f72e5069a6/resourceGroups/apimdemo-rg/providers/Microsoft.Network/virtualNetworks/apimdemo-vnet/subnets/appgwSubnet" 
+        },
+        "certLink": {
+            "value": "https://hgdemovault.vault.azure.net/secrets/cert/1298317608404962b3b3cfe03559c333" 
+        },
+        "apiGwHostname": {
+            "value": "api.hugirard.com" 
+        },
+        "identityId": {
+            "value": "/subscriptions/daf89b62-86a4-4655-a729-38f72e5069a6/resourceGroups/apimdemo-rg/providers/Microsoft.ManagedIdentity/userAssignedIdentities/apggwuseridentity"
+        }
+    }
+}
