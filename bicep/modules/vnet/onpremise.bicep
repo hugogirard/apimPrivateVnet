@@ -132,23 +132,4 @@ resource vm 'Microsoft.Compute/virtualMachines@2019-12-01' = {
   }
 }
 
-// resource extension 'Microsoft.Compute/virtualMachines/extensions@2019-12-01' = {
-//   name: concat(vmName,'/','dscExtension')
-//   location: location
-//   dependsOn: [
-//     vm
-//   ]
-//   properties: {
-//     publisher: 'Microsoft.Powershell'
-//     type: 'DSC'
-//     typeHandlerVersion: '2.19'
-//     autoUpgradeMinorVersion: true
-//     settings: {
-//       ModulesUrl: 'ContosoWebsite.ps1.zip'
-//       ConfigurationFunction: 'ContosoWebsite.ps1\\ContosoWebsite'
-//       Properties: {
-//         MachineName: vmName
-//       }
-//     }
-//   }
-//}
+output subnetGw string = vnet.properties.subnets[0].id

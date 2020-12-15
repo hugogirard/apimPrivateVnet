@@ -21,3 +21,13 @@ module network './modules/vnet/onpremise.bicep' = {
         winServerAddressSubnet: onpremWebAddressSpace
     }
 }
+
+module vpn './modules/gateway/vpn.bicep' = {
+  name: 'vpn'
+  params: {
+      location: resourceGroup().location
+      name: concat('vpn-prem-',uniqueString(resourceGroup().id))
+      subnetId: network.outputs.subnetGw
+      publicIpName: 'pip-gw-prem'
+  }
+}
