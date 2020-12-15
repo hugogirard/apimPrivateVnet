@@ -21,8 +21,3 @@ module network './modules/vnet/onpremise.bicep' = {
         winServerAddressSubnet: onpremWebAddressSpace
     }
 }
-
-// module compute './modules/compute/webserver.bicep' = {
-//   name: 'compute'
-//   params: {}
-// }
