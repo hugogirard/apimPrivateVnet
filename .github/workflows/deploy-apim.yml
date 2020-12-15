@@ -69,13 +69,13 @@ jobs:
   deploy_onpremise_resources:
     runs-on: ubuntu-latest
     needs: deploy_apim_resources
-    
+
     steps:
       - uses: actions/checkout@v2
 
       - name: Show Outputs variables
         run: |
-          echo ${{ jobs.deploy_apim_resources.steps.deployapim.outputs.apimPrivateIp }}
+          echo ${{ needs.deploy_apim_resources.steps.deployapim.outputs.apimPrivateIp }}
       # Login to Azure
       # - name: Azure Login
       #   uses: Azure/login@v1.1
