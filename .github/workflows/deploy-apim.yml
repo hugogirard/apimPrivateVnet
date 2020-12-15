@@ -7,6 +7,7 @@ on:
       - v2
     paths:
       - 'bicep/deploy.bicep'
+      - 'bicep/onpremise.bicep'
       - '.github/workflows/deploy-apim.yml'
 env:
   APIM_RESOURCE_GROUP_NAME: api-demo-rg
