@@ -10,12 +10,8 @@ param adminPassword string {
   secure: true
 }
 
-module onpremise './modules/onprem/onpremise.bicep' = {
-    name: 'onpremise'
-    // dependsOn: [
-    //     network
-    //     apim
-    // ]
+module network './modules/vnet/onpremise.bicep' = {
+    name: 'network'
     params: {
         adminPassword: adminPassword
         adminUsername: adminUsername       
@@ -25,3 +21,8 @@ module onpremise './modules/onprem/onpremise.bicep' = {
         winServerAddressSubnet: onpremWebAddressSpace
     }
 }
+
+// module compute './modules/compute/webserver.bicep' = {
+//   name: 'compute'
+//   params: {}
+// }
