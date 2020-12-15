@@ -16,33 +16,33 @@ var vmName = 'win1api'
 
 
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
-  name: 'nsg-webapi'
-  location: location
-  properties: {
-    securityRules: [
-      {
-        name: 'default-allow-80'
-        properties: {
-          priority: 1000
-          access: 'Allow'
-          direction: 'Inbound'
-          destinationPortRange: '80'
-          protocol: 'Tcp'
-          sourceAddressPrefix: apimPrivateIp
-          sourcePortRange: '*'
-          destinationAddressPrefix: '*'
-        }        
-      }
-    ]
-  }
-}
+// resource nsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
+//   name: 'nsg-webapi'
+//   location: location
+//   properties: {
+//     securityRules: [
+//       {
+//         name: 'default-allow-80'
+//         properties: {
+//           priority: 1000
+//           access: 'Allow'
+//           direction: 'Inbound'
+//           destinationPortRange: '80'
+//           protocol: 'Tcp'
+//           sourceAddressPrefix: apimPrivateIp
+//           sourcePortRange: '*'
+//           destinationAddressPrefix: '*'
+//         }        
+//       }
+//     ]
+//   }
+// }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   name: vnetName
   location: location
   dependsOn: [
-    nsg
+ 
   ]
   properties: {
       addressSpace: {

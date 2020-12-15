@@ -68,3 +68,4 @@ output webServerSubnetId string = vnet.properties.subnets[3].id
 output subnetJumpbox string = vnet.properties.subnets[2].id
 output subnetApim string = vnet.properties.subnets[1].id
 output subnetAppGw string = vnet.properties.subnets[0].id
+output subnetGw string = vnet.properties.subnets[4].id

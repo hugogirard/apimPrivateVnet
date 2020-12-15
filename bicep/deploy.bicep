@@ -41,38 +41,32 @@ module network './modules/vnet/networking.bicep' = {
     }
 }
 
-// module web './modules/webapp/webapp.bicep' = {
-//     name: 'web'
-//     dependsOn: [
-//         network
-//     ]    
-// }
+module vpn './modules/gateway/vpn.bicep' = {
+    name: 'vpn'
+    params: {
+        location: resourceGroup().location
+        name: concat('vpn-cloud-',uniqueString(resourceGroup().id))
+        subnetId: network.outputs.subnetGw
+        publicIpName: 'pip-gw-cloud'
+    }
+}
 
-// module onpremise './modules/onprem/onpremise.bicep' = {
-//     name: 'onpremise'
-//     dependsOn: [
-//         network
-//         apim
-//     ]
-//     params: {
-//         adminPassword: adminPassword
-//         adminUsername: adminUsername
-//         apimPrivateIp: apim.outputs.apimPrivateIp
-//         vnetAddressSpace: onpremVnetAddressSpace
-//         vpnGwAddressSubnet: onpremGatewayAddressSpace
-//         winServerAddressSubnet: onpremWebAddressSpace
-//     }
-// }
+module web './modules/webapp/webapp.bicep' = {
+    name: 'web'
+    dependsOn: [
+        network
+    ]    
+}
 
-// module sql './modules/sql/sql.bicep' = {
-//     name: 'sql'
-//     params: {
-//         adminUsername: adminUsernameSql
-//         adminPassword: adminPasswordSql
-//         subnetId: network.outputs.webServerSubnetId
-//         vnetName: network.outputs.vnetname
-//     }
-// }
+module sql './modules/sql/sql.bicep' = {
+    name: 'sql'
+    params: {
+        adminUsername: adminUsernameSql
+        adminPassword: adminPasswordSql
+        subnetId: network.outputs.webServerSubnetId
+        vnetName: network.outputs.vnetname
+    }
+}
 
 module apim './modules/apim/apim.bicep' = {
     name: 'apim'
