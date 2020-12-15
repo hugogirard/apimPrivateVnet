@@ -15,6 +15,10 @@ env:
 jobs:
   deploy_apim_resources:
     runs-on: ubuntu-latest 
+    
+    # Map outputs of the job
+    outputs:
+      apimPrivateIp: ${{ steps.deployapim.outout.apimPrivateIp }}
 
     steps:
       - uses: actions/checkout@v2
@@ -75,7 +79,7 @@ jobs:
 
       - name: Show Outputs variables
         run: |
-          echo ${{ needs.deploy_apim_resources.steps.deployapim.outputs.apimPrivateIp }}
+          echo ${{ needs.deploy_apim_resources.outputs.apimPrivateIp }}
       # Login to Azure
       # - name: Azure Login
       #   uses: Azure/login@v1.1
