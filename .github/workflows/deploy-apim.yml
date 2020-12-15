@@ -71,55 +71,55 @@ jobs:
           parameters: deploy.parameters.json
           deploymentMode: Incremental          
 
-  deploy_onpremise_resources:
-    runs-on: ubuntu-latest
-    needs: deploy_apim_resources
+  # deploy_onpremise_resources:
+  #   runs-on: ubuntu-latest
+  #   needs: deploy_apim_resources
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      # - name: Show Outputs variables
-      #   run: |
-      #     echo ${{ needs.deploy_apim_resources.outputs.apimPrivateIp }}
+  #     # - name: Show Outputs variables
+  #     #   run: |
+  #     #     echo ${{ needs.deploy_apim_resources.outputs.apimPrivateIp }}
 
-      # Login to Azure
-      - name: Azure Login
-        uses: Azure/login@v1.1
-        with:          
-          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
-          enable-AzPSSession: false
+  #     # Login to Azure
+  #     - name: Azure Login
+  #       uses: Azure/login@v1.1
+  #       with:          
+  #         creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
+  #         enable-AzPSSession: false
 
-      # Compile bicep files
-      - name: Bicep Build
-        uses: aliencube/bicep-build-actions@v0.1
-        with:
-          files: bicep/onpremise.bicep
+  #     # Compile bicep files
+  #     - name: Bicep Build
+  #       uses: aliencube/bicep-build-actions@v0.1
+  #       with:
+  #         files: bicep/onpremise.bicep
 
-      # Create resource group
-      - name: Create Resource Group
-        run: |
-         az group create -n ${{ env.ON_PREM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}  
+  #     # Create resource group
+  #     - name: Create Resource Group
+  #       run: |
+  #        az group create -n ${{ env.ON_PREM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}  
 
-      # Replace parameters
-      - name: Replace tokens
-        uses: cschleiden/replace-tokens@v1.0
-        with:        
-          tokenPrefix: __        
-          tokenSuffix: __        
-          files: '["onpremise.parameters.json"]'
-        env:
-          apimPrivateIp: ${{ needs.deploy_apim_resources.outputs.apimPrivateIp }}
-          adminUsername: ${{ secrets.ADMIN_USERNAME }}
-          adminPassword: ${{ secrets.ADMIN_PASSWORD }}          
+  #     # Replace parameters
+  #     - name: Replace tokens
+  #       uses: cschleiden/replace-tokens@v1.0
+  #       with:        
+  #         tokenPrefix: __        
+  #         tokenSuffix: __        
+  #         files: '["onpremise.parameters.json"]'
+  #       env:
+  #         apimPrivateIp: ${{ needs.deploy_apim_resources.outputs.apimPrivateIp }}
+  #         adminUsername: ${{ secrets.ADMIN_USERNAME }}
+  #         adminPassword: ${{ secrets.ADMIN_PASSWORD }}          
 
-      - name: Deploy On Premise Resources
-        id: deployapim
-        uses: Azure/arm-deploy@v1.0.1
-        with:        
-          scope: resourcegroup          
-          subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
-          region: ${{ env.LOCATION }}        
-          resourceGroupName: ${{ env.ON_PREM_RESOURCE_GROUP_NAME }}        
-          template: bicep/onpremise.json   
-          parameters: onpremise.parameters.json
-          deploymentMode: Incremental                       
+  #     - name: Deploy On Premise Resources
+  #       id: deployapim
+  #       uses: Azure/arm-deploy@v1.0.1
+  #       with:        
+  #         scope: resourcegroup          
+  #         subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
+  #         region: ${{ env.LOCATION }}        
+  #         resourceGroupName: ${{ env.ON_PREM_RESOURCE_GROUP_NAME }}        
+  #         template: bicep/onpremise.json   
+  #         parameters: onpremise.parameters.json
+  #         deploymentMode: Incremental                       
