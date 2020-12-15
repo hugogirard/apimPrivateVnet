@@ -18,7 +18,7 @@ jobs:
     
     # Map outputs of the job
     outputs:
-      apimPrivateIp: ${{ steps.deployapim.outout.apimPrivateIp }}
+      apimPrivateIp: ${{ steps.deployapim.outputs.apimPrivateIp }}
 
     steps:
       - uses: actions/checkout@v2
@@ -58,7 +58,7 @@ jobs:
           adminUsername: ${{ secrets.ADMIN_USERNAME }}
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}
                               
-      - name: Deploy Azure Resources
+      - name: Deploy APIM Resources
         id: deployapim
         uses: Azure/arm-deploy@v1.0.1
         with:        
