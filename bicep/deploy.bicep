@@ -118,4 +118,4 @@ module jumpbox './modules/compute/jumpbox.bicep' = {
 
 output gwSubnetId string = network.outputs.subnetAppGw
 output identityId string = vault.outputs.userIdentityId
-output apimPrivateIp string =  apim.outputs.apimPrivateIp
+output apimSubnetCIDR string =  apimSubnet

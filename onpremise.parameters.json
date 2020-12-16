@@ -11,8 +11,8 @@
         "onpremWebAddressSpace": {
             "value": "10.2.2.0/24"
         },
-        "apimPrivateIp": {
-            "value": "__"
+        "apimSubnetCIDR": {
+            "value": "__apimSubnetCIDR__"
         },
         "adminUsername": {
             "value": "__adminUsername__"

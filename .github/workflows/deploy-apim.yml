@@ -20,7 +20,7 @@ jobs:
     
     # Map outputs of the job
     outputs:
-      apimPrivateIp: ${{ steps.deployapim.outputs.apimPrivateIp }}
+      apimSubnetCIDR: ${{ steps.deployapim.outputs.apimSubnetCIDR }}
 
     steps:
       - uses: actions/checkout@v2
@@ -79,10 +79,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Show Outputs variables
-        run: |
-          echo ${{ needs.deploy_apim_resources.outputs.apimPrivateIp }}
-
       # Login to Azure
       - name: Azure Login
         uses: Azure/login@v1.1
@@ -109,7 +105,7 @@ jobs:
           tokenSuffix: __        
           files: '["onpremise.parameters.json"]'
         env:
-          apimPrivateIp: ${{ needs.deploy_apim_resources.outputs.apimPrivateIp }}
+          apimSubnetCIDR: ${{ needs.deploy_apim_resources.outputs.apimSubnetCIDR }}
           adminUsername: ${{ secrets.ADMIN_USERNAME }}
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}          
 
