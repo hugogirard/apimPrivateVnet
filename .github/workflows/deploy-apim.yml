@@ -21,6 +21,8 @@ jobs:
     # Map outputs of the job
     outputs:
       apimSubnetCIDR: ${{ steps.deployapim.outputs.apimSubnetCIDR }}
+      gwSubnetId: ${{ steps.deployapim.outputs.gwSubnetId }}
+      identityId: ${{ steps.deployapim.outputs.identityId }}
 
     steps:
       - uses: actions/checkout@v2
@@ -119,4 +121,37 @@ jobs:
           resourceGroupName: ${{ env.ON_PREM_RESOURCE_GROUP_NAME }}        
           template: bicep/onpremise.json   
           parameters: onpremise.parameters.json
-          deploymentMode: Incremental                       
+          deploymentMode: Incremental
+
+  deploy_appGw_resources:
+    runs-on: ubuntu-latest
+    needs: deploy_apim_resources
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Login to Azure
+      - name: Azure Login
+        uses: Azure/login@v1.1
+        with:          
+          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
+          enable-AzPSSession: false
+      
+      # Compile bicep files
+      - name: Bicep Build
+        uses: aliencube/bicep-build-actions@v0.1
+        with:
+          files: bicep/appgw.bicep
+
+      # Replace parameters with secrets
+      - name: Replace tokens
+        uses: cschleiden/replace-tokens@v1.0
+        with:        
+          tokenPrefix: __        
+          tokenSuffix: __        
+          files: '["appgw.parameters.json"]'
+        env:
+          gwSubnetId: ${{ needs.deploy_apim_resources.outputs.gwSubnetId }}
+          certLink: ${{ needs.deploy_apim_resources.outputs.certLink }}
+          apiGwHostname: ${{ secrets.API_HOSTNAME }}
+          identityId: ${{ needs.deploy_apim_resources.outputs.identityId }}     
