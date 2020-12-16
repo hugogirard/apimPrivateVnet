@@ -21,8 +21,6 @@ jobs:
     # Map outputs of the job
     outputs:
       apimSubnetCIDR: ${{ steps.deployapim.outputs.apimSubnetCIDR }}
-      gwSubnetId: ${{ steps.deployapim.outputs.gwSubnetId }}
-      identityId: ${{ steps.deployapim.outputs.identityId }}
 
     steps:
       - uses: actions/checkout@v2
@@ -38,7 +36,7 @@ jobs:
       - name: Bicep Build
         uses: aliencube/bicep-build-actions@v0.1
         with:
-          files: bicep/deploy.bicep bicep/appgw.bicep 
+          files: bicep/deploy.bicep
                 
       # Create resource group
       - name: Create Resource Group
@@ -72,31 +70,6 @@ jobs:
           template: bicep/deploy.json   
           parameters: deploy.parameters.json
           deploymentMode: Incremental     
-
-      - name: Replace tokens
-        uses: cschleiden/replace-tokens@v1.0
-        with:        
-          tokenPrefix: __        
-          tokenSuffix: __        
-          files: '["appgw.parameters.json"]'
-        env:
-          gwSubnetId: ${{ steps.deployapim.outputs.gwSubnetId }}
-          certLink: ${{ steps.deployapim.outputs.gwSubnetId }}
-          apiGwHostname: ${{ secrets.API_HOSTNAME }}
-          identityId: ${{ steps.deployapim.outputs.identityId }}              
-
-      - name: Deploy Application Gateway
-        id: deployappgw
-        uses: Azure/arm-deploy@v1.0.1
-        with:        
-          scope: resourcegroup          
-          subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
-          region: ${{ env.LOCATION }}        
-          resourceGroupName: ${{ env.APIM_RESOURCE_GROUP_NAME }}        
-          template: bicep/appgw.json   
-          parameters: appgw.parameters.json
-          deploymentMode: Incremental    
-
 
   deploy_onpremise_resources:
     runs-on: ubuntu-latest
@@ -145,54 +118,4 @@ jobs:
           resourceGroupName: ${{ env.ON_PREM_RESOURCE_GROUP_NAME }}        
           template: bicep/onpremise.json   
           parameters: onpremise.parameters.json
-          deploymentMode: Incremental
-        
-  # deploy_appGw_resources:
-  #   runs-on: ubuntu-latest
-  #   needs: deploy_apim_resources
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-
-  #     # Login to Azure
-  #     - name: Azure Login
-  #       uses: Azure/login@v1.1
-  #       with:          
-  #         creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
-  #         enable-AzPSSession: false
-      
-  #     # Compile bicep files
-  #     - name: Bicep Build
-  #       uses: aliencube/bicep-build-actions@v0.1
-  #       with:
-  #         files: bicep/appgw.bicep
-
-  #     # Replace parameters with secrets
-  #     - name: Replace tokens
-  #       uses: cschleiden/replace-tokens@v1.0
-  #       with:        
-  #         tokenPrefix: __        
-  #         tokenSuffix: __        
-  #         files: '["appgw.parameters.json"]'
-  #       env:
-  #         gwSubnetId: ${{ needs.deploy_apim_resources.outputs.gwSubnetId }}
-  #         certLink: ${{ needs.deploy_apim_resources.outputs.certLink }}
-  #         apiGwHostname: ${{ secrets.API_HOSTNAME }}
-  #         identityId: ${{ needs.deploy_apim_resources.outputs.identityId }}    
-
-  #     - name: seeOutputs
-  #       run: |
-  #         echo ${{ needs.deploy_apim_resources.outputs.gwSubnetId }}
-  #         echo ${{ needs.deploy_apim_resources.outputs.certLink }}
-  #         echo ${{ needs.deploy_apim_resources.outputs.identityId }}
-      # - name: Deploy Application Gateway
-      #   id: deployappgw
-      #   uses: Azure/arm-deploy@v1.0.1
-      #   with:        
-      #     scope: resourcegroup          
-      #     subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
-      #     region: ${{ env.LOCATION }}        
-      #     resourceGroupName: ${{ env.APIM_RESOURCE_GROUP_NAME }}        
-      #     template: bicep/appgw.json   
-      #     parameters: appgw.parameters.json
-      #     deploymentMode: Incremental           
+          deploymentMode: Incremental              

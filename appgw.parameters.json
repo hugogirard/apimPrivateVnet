@@ -3,16 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "gwSubnetId": {
-            "value": "__gwSubnetId__" 
+            "value": "" 
         },
         "certLink": {
-            "value": "__certLink__" 
+            "value": "" 
         },
         "apiGwHostname": {
-            "value": "__apiGwHostname__" 
+            "value": "" 
         },
         "identityId": {
-            "value": "__identityId__"
+            "value": ""
         }
     }
 }
