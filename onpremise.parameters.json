@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "onpremVnetAddressSpace": {
+            "value": "10.2.0.0/16"
+        },
+        "onpremGatewayAddressSpace": {
+            "value": "10.2.1.0/27"
+        },
+        "onpremWebAddressSpace": {
+            "value": "10.2.2.0/24"
+        },
+        "apimSubnetCIDR": {
+            "value": "__apimSubnetCIDR__"
+        },
+        "adminUsername": {
+            "value": "__adminUsername__"
+        },
+        "adminPassword": {
+            "value": "__adminPassword__"
+        }
+    }
+}

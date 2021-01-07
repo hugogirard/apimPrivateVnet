@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WeatherApi</name>
+    </assembly>
+    <members>
+        <member name="M:WeatherApi.Controllers.WeatherForecastController.Get">
+            <summary>
+            Get weather
+            </summary>        
+        </member>
+    </members>
+</doc>

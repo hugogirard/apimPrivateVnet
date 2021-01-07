@@ -1,9 +1,10 @@
 param principalIdApim string
-param vaultName string
 
+var suffix = uniqueString(resourceGroup().id)
 var defaultCertName = 'certificateSecret'
 var identityName = 'apggwuseridentity'
 var location = resourceGroup().location
+var vaultName = concat('vault',suffix)
 
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
     name: identityName

@@ -17,23 +17,41 @@
         "jumpboxSubnet": {
             "value": "10.1.3.0/24"
         },
+        "webServerSubnet": {
+            "value": "10.1.4.0/24"
+        },
+        "gwSubnet": {
+            "value": "10.1.5.0/27"
+        },
+        "onpremVnetAddressSpace": {
+            "value": "10.2.0.0/16"
+        },
+        "onpremGatewayAddressSpace": {
+            "value": "10.2.1.0/24"
+        },
+        "onpremWebAddressSpace": {
+            "value": "10.2.2.0/27"
+        },
         "publisherName": {
-            "value": ""
+            "value": "__publisherName__"
         },
         "publisherEmail": {
-            "value": ""
+            "value": "__publisherEmail__"
         },
-        "adminUsername": {
-            "value": ""
+        "adminUsernameSql": {
+            "value": "__adminUsernameSql__"
         },
-        "adminPassword": {
-            "value": ""
+        "adminPasswordSql": {
+            "value": "__adminPasswordSql__"
         },
         "hostname": {
-            "value": ""
+            "value": "__hostname__"
         },
-        "vaultName": {
-            "value": ""
+        "adminUsername": {
+            "value": "__adminUsername__"
+        },
+        "adminPassword": {
+            "value": "__adminPassword__"
         }
     }
 }

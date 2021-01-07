@@ -3,10 +3,23 @@ param vnetAddressSpace string
 param appgwSubnet string
 param apimSubnet string
 param jumpboxSubnet string
+param webServerSubnet string
+param gwSubnet string
+
+param onpremVnetAddressSpace string
+param onpremGatewayAddressSpace string
+param onpremWebAddressSpace string
+
 param publisherName string
 param publisherEmail string
+param adminUsernameSql string {
+    secure: true
+}
+param adminPasswordSql string {
+    secure: true
+}
+
 param hostname string
-param vaultName string
 
 param adminUsername string {
   secure: true
@@ -21,8 +34,37 @@ module network './modules/vnet/networking.bicep' = {
         vnetName: vnetName
         vnetAddressSpace: vnetAddressSpace
         appgwSubnet: appgwSubnet
-        apimSubnet: apimSubnet
+        apimSubnet: apimSubnet        
         jumpboxSubnet: jumpboxSubnet
+        webServerSubnet: webServerSubnet
+        gwSubnet: gwSubnet
+    }
+}
+
+module vpn './modules/gateway/vpn.bicep' = {
+    name: 'vpn'
+    params: {
+        location: resourceGroup().location
+        name: concat('vpn-cloud-',uniqueString(resourceGroup().id))
+        subnetId: network.outputs.subnetGw
+        publicIpName: 'pip-gw-cloud'
+    }
+}
+
+module web './modules/webapp/webapp.bicep' = {
+    name: 'web'
+    dependsOn: [
+        network
+    ]    
+}
+
+module sql './modules/sql/sql.bicep' = {
+    name: 'sql'
+    params: {
+        adminUsername: adminUsernameSql
+        adminPassword: adminPasswordSql
+        subnetId: network.outputs.webServerSubnetId
+        vnetName: network.outputs.vnetname
     }
 }
 
@@ -45,7 +87,6 @@ module vault './modules/vault/keyvault.bicep' = {
     ]
     params: {
         principalIdApim: apim.outputs.apimIdentity
-        vaultName: vaultName
     }
 }
 
@@ -77,3 +118,4 @@ module jumpbox './modules/compute/jumpbox.bicep' = {
 
 output gwSubnetId string = network.outputs.subnetAppGw
 output identityId string = vault.outputs.userIdentityId
+output apimSubnetCIDR string =  apimSubnet
