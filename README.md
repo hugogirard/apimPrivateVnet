@@ -6,7 +6,7 @@ N/A
 
 First step is to **Fork** this repository.
 
-Here the tool you need installed on your machine.
+Here the tool you need to installe on your machine.
 
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
@@ -16,31 +16,29 @@ Here the tool you need installed on your machine.
 
 Here the [list](https://letsencrypt.org/docs/client-options/) of all supported clients if you want to implement your own logic.
 
-### Run this step if you don't have a SSL certificate
+### Create an Azure Key Vault ###
 
-If you already have a SSL certificate you can just create the **Azure DNS Public Zone** and skip to **Create your Azure KeyVault Step** after.
+If you don't have an Azure Key Vault this is the first step, refer to the [Microsoft Doc](https://docs.microsoft.com/en-us/azure/key-vault/general/quick-create-portal) to create one.
 
-<ol>
-    <li>A domain registered in any domain provider like contoso.com</li>
-    <li>A wildcard certificate like *.contoso.com*</li>
-    <li>An Azure Keyvault with the certificate in it</li>
-</ol>
+### Create Azure DNS Public Zone
 
-If you don't have any certificate is possible to generate one using the provided powershell script in this repository.  You will still need the prerequisites **#1** and create an **Azure DNS Public Zone**.
+This demo is using Azure Public DNS Zone, you will need to have a domain that you own from any register.  Once is done you need to configure your DNS in your domain register with Azure DNS Public Zone entry.
 
-You domain will need to be configured to use custom name servers **(Azure DNS Public zone)** to be able to work with this script.
+It's all explain [here](https://docs.microsoft.com/en-us/azure/dns/dns-getstarted-portal).
 
-Here the [Microsoft Doc](https://docs.microsoft.com/en-us/azure/dns/dns-getstarted-portal) that explains how to do this.
+### Run this step ONLY if you don't have a SSL certificate
 
-Once this is done, you will need to create a **service principal** that have access to your create **Azure DNS Public Zone**.
+Be sure you already configured **Azure Key Vault** and your **Azure Public DNS Zone**.
 
-To create a service principal run the following command.
+First create a service principal running the following command.
 
 ```Bash
 $ az ad sp create-for-rbac --name ServicePrincipalName
 ```
 
-Take note of the output you will need it later.
+Take note of the output you will need it to create Github Secrets.
+
+Now go to 
 
 ### Create your Azure Key Vault
 

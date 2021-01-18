@@ -22,7 +22,8 @@ $azParams = @{
 }
 
 try {
-
+    Set-PAServer LE_PROD
+    
     $workingDirectory = Join-Path -Path "." -ChildPath "pa"
     New-Item -Path $workingDirectory -ItemType Directory | Out-Null
 
@@ -39,8 +40,6 @@ try {
         # Update account contact
         Set-PAAccount -ID $account.id -Contact $AcmeContact
     }
-
-    Set-PAServer LE_PROD
 
     New-PACertificate $certNames -Plugin Azure -PluginArgs $azParams -Force    
 
