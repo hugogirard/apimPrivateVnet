@@ -1,55 +1,49 @@
-The important files are **deployBase.ps1**, **deployappgwps1** and the two parameters files (json).
+# What this github does
 
-First enter all the proper values in deploy.parameters.json and run the script **deployBase.ps1** (the script has defaulted values for the parameters but they can be overwritten).
+N/A
 
-This should take around 45 minutes.
+## Prerequisites
 
-Once it is done, you will have a VNET, APIM, KeyVault, Private DNS Zone, Managed User Identity and a Linux Jumpbox.
+First step is to **Fork** this repository.
 
-Take note of the two outputs returned by the script.
+Here the tool you need installed on your machine.
 
-Now connect to the Azure Portal
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 
-Go and upload your SSL certificate in the Azure KeyVault (you will need to give yourself the proper access policies).
+- [Powershell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.1)
 
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/policies.png)
+- Install the official [Powershell](https://github.com/rmbolger/Posh-ACME) **Let's Encrypt client**
 
-Next go to your API Management and custom domains
+Here the [list](https://letsencrypt.org/docs/client-options/) of all supported clients if you want to implement your own logic.
 
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/domains.png)
+### Run this step if you don't have a SSL certificate
 
-Create a new hostname for the API Gateway related to your private DNS zone and select the certificate you uploaded in the KeyVault.
+If you already have a SSL certificate you can just create the **Azure DNS Public Zone** and skip to **Create your Azure KeyVault Step** after.
 
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/vault.png)
+<ol>
+    <li>A domain registered in any domain provider like contoso.com</li>
+    <li>A wildcard certificate like *.contoso.com*</li>
+    <li>An Azure Keyvault with the certificate in it</li>
+</ol>
 
-Now retrieve the private IP of the Api Management
+If you don't have any certificate is possible to generate one using the provided powershell script in this repository.  You will still need the prerequisites **#1** and create an **Azure DNS Public Zone**.
 
-Go to your Azure Private DNS Zone and create a new A record entry
+You domain will need to be configured to use custom name servers **(Azure DNS Public zone)** to be able to work with this script.
 
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/privatedns.png)
+Here the [Microsoft Doc](https://docs.microsoft.com/en-us/azure/dns/dns-getstarted-portal) that explains how to do this.
 
-Now fill all the parameters in the file appgw.parameters.json with the two values returned previously and the URL of your certificate (parameter certLink).
+Once this is done, you will need to create a **service principal** that have access to your create **Azure DNS Public Zone**.
 
-To find this go to your certificate in the keyvault and check the value of Secret Identifier.
+To create a service principal run the following command.
 
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/secrets.png)
+```Bash
+$ az ad sp create-for-rbac --name ServicePrincipalName
+```
 
-Now execute the script **deployappgw.ps1** passing the resource group as a parameter
+Take note of the output you will need it later.
 
-Once it is done get the public ip of the App GW and add a record in your public DNS server.
+### Create your Azure Key Vault
 
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/publicdns.png)
+Now is time to create you [Azure KeyVault](https://docs.microsoft.com/en-us/azure/key-vault/general/quick-create-portal).
 
-Use the jumpbox to test the nslookup resolution like the example below.
-
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionprivate.png)
-
-Normally this should use the private IP
-
-Now do a nslookup from your computer, this should use the public ip of the Application Gateway (it can take up to 24 hours to work depending of your DNS server).
-
-![system schema](https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionpublic.png)
-
-** BE SURE WHEN YOU CONFIGURE API DEFINITION IN APIM TO SET THE URL SCHEME TO BOTH, RIGHT NOW NO END TO END SSL IS DONE AND THIS STOP AT APP GATEWAY. **
-
-
+Once is done upload your certificate into it.
