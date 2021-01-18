@@ -30,7 +30,7 @@ jobs:
         uses: Azure/powershell@v1
         with:        
           inlineScript: |
-            Install-Module -Name Posh-ACME -Scope CurrentUser        
+            Install-Module -Name Posh-ACME -Scope CurrentUser -Force        
           azPSVersion: latest
 
       - name: Azure PowerShell Action
