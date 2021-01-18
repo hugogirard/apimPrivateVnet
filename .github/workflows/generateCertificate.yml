@@ -25,7 +25,6 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{secrets.SP_AZURE_CREDENTIALS}}
-          enable-AzPSSession: true 
 
       - name: Install Acme Module
         uses: Azure/powershell@v1
