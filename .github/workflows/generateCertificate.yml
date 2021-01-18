@@ -21,9 +21,23 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Login via Az module
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.SP_AZURE_CREDENTIALS}}
+          enable-AzPSSession: true 
+
       - name: Install Acme Module
         uses: Azure/powershell@v1
         with:        
           inlineScript: |
             Install-Module -Name Posh-ACME -Scope CurrentUser        
           azPSVersion: latest
+
+      - name: Azure PowerShell Action
+        uses: Azure/powershell@v1
+        with: 
+          inlineScript: 
+            .\scripts\letsEncrypt.ps1 -certNames ${{CERT_NAME}} -acmeContact ${{ACME_CONTACT}} -aZSubscriptionId ${{SUBSCRIPTION_ID}} -aZTenantId ${{aZTenantId}} -aZAppUsername ${{SP_USERNAME}} -aZAppPasswordInsecure ${{SP_PASSWORD}}
+          azPSVersion: latest
+ 
