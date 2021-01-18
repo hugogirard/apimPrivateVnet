@@ -33,10 +33,11 @@ jobs:
             Install-Module -Name Posh-ACME -Scope CurrentUser -Force        
           azPSVersion: latest
 
-      - name: Azure PowerShell Action
+      - name: Generate SSL Certificate
         uses: Azure/powershell@v1
         with: 
           inlineScript: 
+            Set-PAServer
             .\scripts\letsEncrypt.ps1 -certNames ${{secrets.CERT_NAME}} -acmeContact ${{secrets.ACME_CONTACT}} -aZSubscriptionId ${{secrets.SUBSCRIPTION_ID}} -aZTenantId ${{secrets.TENANT_ID}} -aZAppUsername ${{secrets.SP_USERNAME}} -aZAppPasswordInsecure ${{secrets.SP_PASSWORD}}
           azPSVersion: latest
  
