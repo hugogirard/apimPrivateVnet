@@ -1,7 +1,6 @@
 name: Deploy APIM Infra
 
-on:
-  workflow_dispatch:
+on:  
   push:
     branches:
       - v2
@@ -9,6 +8,9 @@ on:
       - 'bicep/deploy.bicep'
       - 'bicep/onpremise.bicep'
       - '.github/workflows/deploy-apim.yml'
+
+  workflow_dispatch:
+    
 env:
   APIM_RESOURCE_GROUP_NAME: api-demo-rg
   ON_PREM_RESOURCE_GROUP_NAME: onprem-demo-rg

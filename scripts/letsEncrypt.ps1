@@ -11,7 +11,9 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$aZAppUsername,
     [Parameter(Mandatory = $true)]
-    [string]$aZAppPasswordInsecure
+    [string]$aZAppPassword,
+    [Parameter(Mandatory = $true)]
+    [string]$pfxPassword = $true
 )
 
 $azParams = @{
@@ -22,7 +24,6 @@ $azParams = @{
 }
 
 try {
-    Set-PAServer LE_PROD
     
     $workingDirectory = Join-Path -Path "." -ChildPath "pa"
     New-Item -Path $workingDirectory -ItemType Directory | Out-Null
@@ -41,7 +42,9 @@ try {
         Set-PAAccount -ID $account.id -Contact $AcmeContact
     }
 
-    New-PACertificate $certNames -Plugin Azure -PluginArgs $azParams -Force    
+    Set-PAServer LE_PROD
+
+    New-PACertificate $certNames -Plugin Azure -PluginArgs $azParams -PfxPass $pfxPassword -Force    
 
 }
 catch {
