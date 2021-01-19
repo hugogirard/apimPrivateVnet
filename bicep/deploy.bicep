@@ -80,16 +80,6 @@ module apim './modules/apim/apim.bicep' = {
     }
 }
 
-module vault './modules/vault/keyvault.bicep' = {
-    name: 'vault'
-    dependsOn: [
-        apim
-    ]
-    params: {
-        principalIdApim: apim.outputs.apimIdentity
-    }
-}
-
 module dns './modules/dns/dns.bicep' = {
     name: 'dns'
     dependsOn: [
@@ -117,5 +107,4 @@ module jumpbox './modules/compute/jumpbox.bicep' = {
 }
 
 output gwSubnetId string = network.outputs.subnetAppGw
-output identityId string = vault.outputs.userIdentityId
 output apimSubnetCIDR string =  apimSubnet

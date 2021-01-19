@@ -80,4 +80,18 @@ Copy the value from that textbox you will need to create a Github secret.
 
 <img src="https://github.com/hugogirard/apimPrivateVnet/blob/main/images/identifier.png?raw=true" />
 
+*** Run the Github Action ***
 
+Now is time to run the Github Action that will create all the Azure Resources, first you need to create some Github Secrets.
+
+| Secret Name          | Description                                           | Link
+| ---------------------| ------------------------------------------------------| ---------
+| SP_AZURE_CREDENTIALS | Secret that contains the credential to run Az Login.  | (Action)[https://github.com/marketplace/actions/azure-login]
+| PUBLISHER_NAME       | The publisher name associated to APIM                 |
+| PUBLISHER_EMAIL      | The publisher email associated to APIM                |
+| ADMIN_USERNAME_SQL   | The username admin for the SQL Azure Database         |
+| ADMIN_PASSWORD_SQL   | The password for the SQL Azure Database               |
+| HOSTNAME             | The hostname of your domain like contoso.com          |
+| ADMIN_USERNAME       | The admin username of the Jumpbox and on prem VM      |
+| ADMIN_PASSWORD       | The password of the Jumpbox and on prem VM            |
+| SUBSCRIPTION_ID      | The subscription ID where to deploy the Az Resources  |
