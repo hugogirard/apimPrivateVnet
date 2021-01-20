@@ -48,7 +48,7 @@ resource web 'Microsoft.Web/sites@2019-08-01' = {
   }
 }
 
-resource wcf 'Microsoft.Web/sites@2019-08-01' {
+resource wcf 'Microsoft.Web/sites@2019-08-01' = {
   name: wcfApp
   location: location
   dependsOn: [

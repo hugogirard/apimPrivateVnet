@@ -5,8 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'bicep/deploy.bicep'
-      - 'bicep/onpremise.bicep'
+      - 'bicep/*.bicep'      
       - '.github/workflows/deploy-apim.yml'
 
   workflow_dispatch:
