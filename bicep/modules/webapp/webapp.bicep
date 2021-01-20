@@ -6,6 +6,7 @@ var appServiceWebName = concat('appsrvweb',suffix)
 var location = resourceGroup().location
 var webapiName = concat('todoapi-',suffix)
 var webAppWeb = concat('todoweb-',suffix)
+var wcfApp = concat('wcfapp-',suffix)
 
 resource appserviceAPi 'Microsoft.Web/serverfarms@2019-08-01' = {
   name: appServiceApiName
@@ -45,4 +46,15 @@ resource web 'Microsoft.Web/sites@2019-08-01' = {
   properties: {
     serverFarmId: appserviceWeb.id
   }
+}
+
+resource wcf 'Microsoft.Web/sites@2019-08-01' {
+  name: wcfApp
+  location: location
+  dependsOn: [
+    appserviceWeb
+  ]
+  properties: {
+    serverFarmId: appserviceWeb.id
+  }  
 }

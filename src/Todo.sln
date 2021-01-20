@@ -7,9 +7,33 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoApi", "TodoApi\TodoApi.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoWeb", "TodoWeb\TodoWeb.csproj", "{ABB7C39A-5CDD-4F1F-9A8D-05405BFDED05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "deamon-console", "deamon-console\deamon-console.csproj", "{753F7E93-E133-4AC2-A431-AF602942D4DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "deamon-console", "deamon-console\deamon-console.csproj", "{753F7E93-E133-4AC2-A431-AF602942D4DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherApi", "WeatherApi\WeatherApi.csproj", "{259446E7-F225-44A8-9A2E-4AABFC4A94EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherApi", "WeatherApi\WeatherApi.csproj", "{259446E7-F225-44A8-9A2E-4AABFC4A94EB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WCF", "WCF", "{534908C1-3955-4ADC-961F-F62D0D1A83FF}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "LegacySoapService", "LegacySoapService\", "{C026C1D4-1A8B-4C73-B00D-91F7289B7860}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.1"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_59405"
+		Debug.AspNetCompiler.PhysicalPath = "LegacySoapService\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_59405\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_59405"
+		Release.AspNetCompiler.PhysicalPath = "LegacySoapService\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_59405\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "59405"
+		SlnRelativePath = "LegacySoapService\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +57,16 @@ Global
 		{259446E7-F225-44A8-9A2E-4AABFC4A94EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{259446E7-F225-44A8-9A2E-4AABFC4A94EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{259446E7-F225-44A8-9A2E-4AABFC4A94EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C026C1D4-1A8B-4C73-B00D-91F7289B7860}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C026C1D4-1A8B-4C73-B00D-91F7289B7860}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C026C1D4-1A8B-4C73-B00D-91F7289B7860}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{C026C1D4-1A8B-4C73-B00D-91F7289B7860}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C026C1D4-1A8B-4C73-B00D-91F7289B7860} = {534908C1-3955-4ADC-961F-F62D0D1A83FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5D41D3B7-1B57-4C0C-8F62-D775A7FE2C67}
