@@ -59,6 +59,7 @@ jobs:
           hostname: ${{ secrets.HOSTNAME }}
           adminUsername: ${{ secrets.ADMIN_USERNAME }}
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}
+          vaultName: ${{ secrets.VAULT_NAME }}
                               
       - name: Deploy APIM Resources
         id: deployapim

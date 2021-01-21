@@ -52,6 +52,9 @@
         },
         "adminPassword": {
             "value": "__adminPassword__"
+        },
+        "vaultName": {
+            "value": "__vaultName__"
         }
     }
 }
