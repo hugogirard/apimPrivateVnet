@@ -39,11 +39,6 @@ jobs:
         with:
           files: bicep/deploy.bicep
                 
-      # Create resource group
-      - name: Create Resource Group
-        run: |
-         az group create -n ${{ env.APIM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}
-
       # Replace parameters with secrets
       - name: Replace tokens
         uses: cschleiden/replace-tokens@v1.0

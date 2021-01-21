@@ -32,6 +32,9 @@ resource accessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2019-09-01' = 
             'get'
             'list'
           ]
+          certificates: [
+            'list'
+          ]
         }        
       }
     ]
