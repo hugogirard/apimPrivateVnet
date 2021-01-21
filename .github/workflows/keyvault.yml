@@ -41,7 +41,7 @@ jobs:
 
       - name: Get SP ObjectId
         run: |
-         echo az ad signed-in-user show --query objectId >> $SP_OBJECT_ID
+         echo "SP_OBJECT_ID=$(az ad signed-in-user show --query objectId)" >> $GITHUB_ENV
 
       - name: Deploy KeyVault Resources
         id: deployapim
