@@ -15,7 +15,7 @@ env:
   LOCATION: eastus
 
 jobs:
-  deploy_apim_resources:
+  deploy_keyvault_resources:
     runs-on: ubuntu-latest 
     
     steps:
@@ -48,5 +48,5 @@ jobs:
           region: ${{ env.LOCATION }}        
           resourceGroupName: ${{ env.APIM_RESOURCE_GROUP_NAME }}        
           template: bicep/keyvault.json   
-          parameters: principalAdminObjectId=${{ secrets.ADMIN_VAULT_OBJECT_ID }}
+          parameters: principalAdminObjectId=${{ secrets.ADMIN_VAULT_OBJECT_ID }} vaultName=${{ secrets.VAULT_NAME }}
           deploymentMode: Incremental      
