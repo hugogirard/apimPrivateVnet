@@ -37,8 +37,12 @@ jobs:
       # Create resource group
       - name: Create Resource Group
         run: |
-         az group create -n ${{ env.APIM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}
-                              
+         echo ::set-env name=SP_OBJECT_ID::$(az group create -n ${{ env.APIM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }})
+
+      - name: Get SP ObjectId
+        run: |
+         az ad signed-in-user show --query objectId
+
       - name: Deploy KeyVault Resources
         id: deployapim
         uses: Azure/arm-deploy@v1.0.1
@@ -48,5 +52,5 @@ jobs:
           region: ${{ env.LOCATION }}        
           resourceGroupName: ${{ env.APIM_RESOURCE_GROUP_NAME }}        
           template: bicep/keyvault.json   
-          parameters: principalAdminObjectId=${{ secrets.ADMIN_VAULT_OBJECT_ID }} vaultName=${{ secrets.VAULT_NAME }}
+          parameters: principalAdminObjectId=${{ secrets.ADMIN_VAULT_OBJECT_ID }} vaultName=${{ secrets.VAULT_NAME }} spIdentity=${{ env.SP_OBJECT_ID }}
           deploymentMode: Incremental      

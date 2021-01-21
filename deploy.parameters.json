@@ -55,6 +55,12 @@
         },
         "vaultName": {
             "value": "__vaultName__"
+        },
+        "apiHostname": {
+            "value": "__apiHostname__"
+        },
+        "keyVaultId": {
+            "value": "__keyVaultId__"
         }
     }
 }

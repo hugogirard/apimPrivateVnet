@@ -1,6 +1,8 @@
 param publisherName string
 param publisherEmail string
 param subnetResourceId string
+param apiHostname string
+param keyVaultId string
 
 var suffix = uniqueString(resourceGroup().id)
 var apimName = concat('apim-',suffix)
@@ -16,6 +18,14 @@ resource apim 'Microsoft.ApiManagement/service@2019-12-01' = {
         virtualNetworkType: 'Internal'
         publisherEmail: publisherEmail
         publisherName: publisherName
+        hostnameConfigurations: [
+            {
+                type: 'Proxy'
+                hostName: apiHostname
+                keyVaultId: keyVaultId
+                negotiateClientCertificate: false
+            }
+        ]
     }
     identity: {
         type: 'SystemAssigned'

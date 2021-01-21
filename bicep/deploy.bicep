@@ -6,6 +6,9 @@ param jumpboxSubnet string
 param webServerSubnet string
 param gwSubnet string
 param vaultName string
+param spIdentity string
+param apiHostname string
+param keyVaultId string
 
 param onpremVnetAddressSpace string
 param onpremGatewayAddressSpace string
@@ -78,6 +81,8 @@ module apim './modules/apim/apim.bicep' = {
         publisherName: publisherName
         publisherEmail: publisherEmail
         subnetResourceId: network.outputs.subnetApim
+        apiHostname: apiHostname
+        keyVaultId: keyVaultId
     }
 }
 
@@ -89,6 +94,7 @@ module vault './modules/vault/vault.bicep' = {
     params: {
         vaultName: vaultName
         apimIdentity: apim.outputs.apimIdentity
+        spIdentity: spIdentity
     }
 }
 

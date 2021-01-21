@@ -1,5 +1,6 @@
 param vaultName string
 param apimIdentity string
+param spIdentity string
 
 var identityName = 'apggwuseridentity'
 var location = resourceGroup().location
@@ -19,20 +20,37 @@ resource accessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2019-09-01' = 
         objectId: reference(identity.id).principalId
         permissions: {
           secrets: [
-            'get'
-            'list'
+            'all'
+          ]
+          certificates: [
+            'all'
+          ]
+          keys: [
+            'all'            
           ]
         }
       }
+      {
+        tenantId: subscription().tenantId
+        objectId: spIdentity
+        permissions: {
+          secrets: [
+            'all'
+          ]
+          certificates: [
+            'all'
+          ]
+          keys: [
+            'all'            
+          ]
+        }
+      }      
       {
         tenantId: subscription().tenantId
         objectId: apimIdentity
         permissions: {
           secrets: [
             'get'
-            'list'
-          ]
-          certificates: [
             'list'
           ]
         }        
