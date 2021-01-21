@@ -1,5 +1,6 @@
 param principalAdminObjectId string
 param vaultName string
+param spIdentity string
 
 var location = resourceGroup().location
 
@@ -21,7 +22,22 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
                         'all'                      
                     ]
                 }
-            }          
+            }
+            {
+                tenantId: subscription().tenantId
+                objectId: spIdentity
+                permissions: {
+                  secrets: [
+                    'all'
+                  ]
+                  certificates: [
+                    'all'
+                  ]
+                  keys: [
+                    'all'            
+                  ]
+                }
+            }                       
         ]        
     }
 }

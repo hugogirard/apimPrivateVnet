@@ -6,7 +6,6 @@ param jumpboxSubnet string
 param webServerSubnet string
 param gwSubnet string
 param vaultName string
-param spIdentity string
 param apiHostname string
 param keyVaultId string
 
@@ -94,7 +93,6 @@ module vault './modules/vault/vault.bicep' = {
     params: {
         vaultName: vaultName
         apimIdentity: apim.outputs.apimIdentity
-        spIdentity: spIdentity
     }
 }
 
