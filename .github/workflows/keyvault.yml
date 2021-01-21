@@ -37,11 +37,11 @@ jobs:
       # Create resource group
       - name: Create Resource Group
         run: |
-         echo ::set-env name=SP_OBJECT_ID::$(az group create -n ${{ env.APIM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }})
+         az group create -n ${{ env.APIM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}
 
       - name: Get SP ObjectId
         run: |
-         az ad signed-in-user show --query objectId
+         echo az ad signed-in-user show --query objectId >> $SP_OBJECT_ID
 
       - name: Deploy KeyVault Resources
         id: deployapim
