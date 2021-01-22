@@ -674,6 +674,9 @@
           },
           "spIdentity": {
             "value": "[parameters('spIdentity')]"
+          },
+          "apimIdentity": {
+            "value": "[reference(extensionResourceId(resourceGroup().id, 'Microsoft.Resources/deployments', 'apim'), '2019-10-01').outputs.apimhostname.value]"
           }
         },
         "template": {
@@ -684,6 +687,9 @@
               "type": "string"
             },
             "spIdentity": {
+              "type": "string"
+            },
+            "apimIdentity": {
               "type": "string"
             }
           },
@@ -748,6 +754,20 @@
                       ],
                       "keys": [
                         "all"
+                      ]
+                    }
+                  },
+                  {
+                    "tenantId": "[subscription().tenantId]",
+                    "objectId": "[parameters('apimIdentity')]",
+                    "permissions": {
+                      "secrets": [
+                        "get",
+                        "list"
+                      ],
+                      "certificates": [
+                        "get",
+                        "list"
                       ]
                     }
                   }

@@ -108,6 +108,7 @@ module vault './modules/vault/keyvault.bicep' = {
     params: {
         principalAdminObjectId: principalAdminObjectId
         spIdentity: spIdentity
+        apimIdentity: apim.outputs.apimhostname
     }
 }
 
