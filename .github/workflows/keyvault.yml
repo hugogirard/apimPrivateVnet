@@ -54,7 +54,7 @@ jobs:
           parameters: principalAdminObjectId=${{ secrets.ADMIN_VAULT_OBJECT_ID }} spIdentity=${{ secrets.SP_PRINCIPAL_OBJECT_ID }}
           deploymentMode: Incremental      
 
-      - name: Create GitHub Secret GatewaySubnet
+      - name: Create GitHub Secret VaultName
         uses: gliech/create-github-secret-action@v1.4.2
         with:
           name: VAULT_NAME

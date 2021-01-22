@@ -2,8 +2,6 @@ param publisherName string
 param publisherEmail string
 param subnetResourceId string
 param apiHostname string
-param keyVaultName string
-param secretName string
 
 var suffix = uniqueString(resourceGroup().id)
 var apimName = concat('apim-',suffix)
