@@ -5,8 +5,9 @@ param apimSubnet string
 param jumpboxSubnet string
 param webServerSubnet string
 param gwSubnet string
-param vaultName string
-param apiHostname string
+
+param principalAdminObjectId string
+param spIdentity string
 
 param onpremVnetAddressSpace string
 param onpremGatewayAddressSpace string
@@ -29,6 +30,8 @@ param adminUsername string {
 param adminPassword string {
   secure: true
 }
+
+var apiHostname = 'api.${hostname}'
 
 module network './modules/vnet/networking.bicep' = {
     name: 'network'
@@ -83,17 +86,6 @@ module apim './modules/apim/apim.bicep' = {
     }
 }
 
-module vault './modules/vault/vault.bicep' = {
-    name: 'vault'
-    dependsOn: [
-        apim
-    ]
-    params: {
-        vaultName: vaultName
-        apimIdentity: apim.outputs.apimIdentity
-    }
-}
-
 module dns './modules/dns/dns.bicep' = {
     name: 'dns'
     dependsOn: [
@@ -105,6 +97,17 @@ module dns './modules/dns/dns.bicep' = {
         apimIpAddress: apim.outputs.apimPrivateIp
         vnetId: network.outputs.vnetId
         vnetName: vnetName
+    }
+}
+
+module vault './modules/vault/keyvault.bicep' = {
+    name: 'vault'
+    dependsOn: [
+        apim
+    ]
+    params: {
+        principalAdminObjectId: principalAdminObjectId
+        spIdentity: spIdentity
     }
 }
 

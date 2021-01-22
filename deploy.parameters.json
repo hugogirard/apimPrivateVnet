@@ -53,11 +53,12 @@
         "adminPassword": {
             "value": "__adminPassword__"
         },
-        "vaultName": {
-            "value": "__vaultName__"
+        "principalAdminObjectId": {
+            "value": "__principalAdminObjectId__"
         },
-        "apiHostname": {
-            "value": "__apiHostname__"
+        "spIdentity": {
+            "value": "__spIdentity__"
         }
+
     }
 }
