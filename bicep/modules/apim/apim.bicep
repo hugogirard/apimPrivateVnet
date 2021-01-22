@@ -44,6 +44,5 @@ resource apim 'Microsoft.ApiManagement/service@2019-12-01' = {
     }
 }
 
-output apimIdentity string = apim.identity.principalId
 output apimhostname string = concat(apimName,'.net')
 output apimPrivateIp string = apim.properties.privateIPAddresses[0]
