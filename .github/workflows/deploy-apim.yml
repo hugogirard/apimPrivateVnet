@@ -1,12 +1,12 @@
 name: Deploy APIM Infra
 
 on:  
-  push:
-    branches:
-      - main
-    paths:
-      - 'bicep/*.bicep'      
-      - '.github/workflows/deploy-apim.yml'
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - 'bicep/*.bicep'      
+#      - '.github/workflows/deploy-apim.yml'
 
   workflow_dispatch:
     
@@ -58,7 +58,6 @@ jobs:
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}
           vaultName: ${{ secrets.VAULT_NAME }}
           apiHostname: ${{ secrets.API_HOSTNAME }}
-          secretName: ${{ secrets.SSL_SECRET_NAME }}
                               
       - name: Deploy APIM Resources
         id: deployapim
