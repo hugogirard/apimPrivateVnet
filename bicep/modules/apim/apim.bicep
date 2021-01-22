@@ -10,7 +10,7 @@ var suffix = uniqueString(resourceGroup().id)
 var apimName = concat('apim-',suffix)
 var location = resourceGroup().location
 
-resource apim 'Microsoft.ApiManagement/service@2019-12-01' = {
+resource apim 'Microsoft.ApiManagement/service@2020-06-01-preview' = {
     name: apimName
     location: location
     properties: {
