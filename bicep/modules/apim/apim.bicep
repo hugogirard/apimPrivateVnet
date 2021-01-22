@@ -2,7 +2,9 @@ param publisherName string
 param publisherEmail string
 param subnetResourceId string
 param apiHostname string
-param keyVaultId string
+param keyVaultName string
+param secretName string
+param managedIdentityId string
 
 var suffix = uniqueString(resourceGroup().id)
 var apimName = concat('apim-',suffix)
@@ -22,13 +24,19 @@ resource apim 'Microsoft.ApiManagement/service@2019-12-01' = {
             {
                 type: 'Proxy'
                 hostName: apiHostname
-                keyVaultId: keyVaultId
+                keyVaultId: concat(reference(keyVaultName).vaultUri,'secrets/${secretName}')
                 negotiateClientCertificate: false
+                defaultSslBinding: true
             }
         ]
     }
     identity: {
-        type: 'SystemAssigned'
+        type: 'UserAssigned'
+        userAssignedIdentities: {
+            managedIdentityId: {
+                
+            }
+        }
     }
     sku: {
         name: 'Developer'

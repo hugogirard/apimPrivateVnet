@@ -7,7 +7,7 @@ param webServerSubnet string
 param gwSubnet string
 param vaultName string
 param apiHostname string
-param keyVaultId string
+param secretName string
 
 param onpremVnetAddressSpace string
 param onpremGatewayAddressSpace string
@@ -71,30 +71,36 @@ module sql './modules/sql/sql.bicep' = {
     }
 }
 
+module identity './modules/identity/identity.bicep' = {
+    name: 'identity'
+}
+
+module vault './modules/vault/vault.bicep' = {
+    name: 'vault'
+    params: {
+        vaultName: vaultName
+        apimIdentity: identity.outputs.apimManagedIdenity
+    }
+}
+
 module apim './modules/apim/apim.bicep' = {
     name: 'apim'
     dependsOn: [
         network
+        vault
     ]
     params: {
         publisherName: publisherName
         publisherEmail: publisherEmail
         subnetResourceId: network.outputs.subnetApim
         apiHostname: apiHostname
-        keyVaultId: keyVaultId
+        keyVaultName: vaultName
+        secretName: secretName
+        managedIdentityId: identity.outputs.apimManagedIdenity
     }
 }
 
-module vault './modules/vault/vault.bicep' = {
-    name: 'vault'
-    dependsOn: [
-        apim
-    ]
-    params: {
-        vaultName: vaultName
-        apimIdentity: apim.outputs.apimIdentity
-    }
-}
+
 
 module dns './modules/dns/dns.bicep' = {
     name: 'dns'

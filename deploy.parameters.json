@@ -59,8 +59,8 @@
         "apiHostname": {
             "value": "__apiHostname__"
         },
-        "keyVaultId": {
-            "value": "__keyVaultId__"
+        "secretName": {
+            "value": "__secretName__"
         }
     }
 }
