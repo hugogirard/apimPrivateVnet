@@ -108,7 +108,7 @@ module vault './modules/vault/keyvault.bicep' = {
     params: {
         principalAdminObjectId: principalAdminObjectId
         spIdentity: spIdentity
-        apimIdentity: apim.outputs.apimhostname
+        apimIdentity: apim.outputs.apimIdentity
     }
 }
 
@@ -126,4 +126,3 @@ module jumpbox './modules/compute/jumpbox.bicep' = {
 
 output gwSubnetId string = network.outputs.subnetAppGw
 output apimSubnetCIDR string =  apimSubnet
-output identityId string = 'test'
