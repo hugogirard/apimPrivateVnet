@@ -80,13 +80,13 @@ jobs:
       - uses: gliech/create-github-secret-action@v1
         with:
           name: API_GW_HOSTNAME
-          value: ${{ needs.deploy_apim_resources.outputs.gwSubnetId }}
+          value: ${{ needs.deploy_apim_resources.outputs.apiHostname }}
           pa_token: ${{ secrets.PA_TOKEN }}          
 
       - uses: gliech/create-github-secret-action@v1
         with:
           name: API_GW_IDENTITYID
-          value: ${{ needs.deploy_apim_resources.outputs.gwSubnetId }}
+          value: ${{ needs.deploy_apim_resources.outputs.identityId }}
           pa_token: ${{ secrets.PA_TOKEN }}                   
 
   deploy_onpremise_resources:

@@ -34,7 +34,7 @@ jobs:
         with:
           files: bicep/appgw.bicep
                                               
-      - name: Deploy APIM Resources
+      - name: Deploy AppGW Resources
         id: deployapim
         uses: Azure/arm-deploy@v1.0.1
         with:        

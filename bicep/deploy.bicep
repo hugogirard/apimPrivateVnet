@@ -31,8 +31,6 @@ param adminPassword string {
   secure: true
 }
 
-var apiHostname = 'api.${hostname}'
-
 module network './modules/vnet/networking.bicep' = {
     name: 'network'
     params: {
@@ -82,7 +80,6 @@ module apim './modules/apim/apim.bicep' = {
         publisherName: publisherName
         publisherEmail: publisherEmail
         subnetResourceId: network.outputs.subnetApim
-        apiHostname: apiHostname
     }
 }
 
@@ -126,3 +123,4 @@ module jumpbox './modules/compute/jumpbox.bicep' = {
 
 output gwSubnetId string = network.outputs.subnetAppGw
 output apimSubnetCIDR string =  apimSubnet
+output apiHostname string = 'api.${hostname}'
