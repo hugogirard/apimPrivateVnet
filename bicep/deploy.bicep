@@ -71,18 +71,10 @@ module sql './modules/sql/sql.bicep' = {
     }
 }
 
-module vault './modules/vault/vault.bicep' = {
-    name: 'vault'
-    params: {
-        vaultName: vaultName
-    }
-}
-
 module apim './modules/apim/apim.bicep' = {
     name: 'apim'
     dependsOn: [
-        network
-        vault
+        network  
     ]
     params: {
         publisherName: publisherName
@@ -91,25 +83,33 @@ module apim './modules/apim/apim.bicep' = {
         apiHostname: apiHostname
         keyVaultName: vaultName
         secretName: secretName
-        managedIdentityId: vault.outputs.apimIdentityId
     }
 }
 
+module vault './modules/vault/vault.bicep' = {
+    name: 'vault'
+    dependsOn: [
+        apim
+    ]
+    params: {
+        vaultName: vaultName
+        apimIdentity: apim.outputs.apimIdentity
+    }
+}
 
-
-// module dns './modules/dns/dns.bicep' = {
-//     name: 'dns'
-//     dependsOn: [
-//         apim
-//         network
-//     ]
-//     params: {
-//         dnsZoneName: hostname
-//         apimIpAddress: apim.outputs.apimPrivateIp
-//         vnetId: network.outputs.vnetId
-//         vnetName: vnetName
-//     }
-// }
+module dns './modules/dns/dns.bicep' = {
+    name: 'dns'
+    dependsOn: [
+        apim
+        network
+    ]
+    params: {
+        dnsZoneName: hostname
+        apimIpAddress: apim.outputs.apimPrivateIp
+        vnetId: network.outputs.vnetId
+        vnetName: vnetName
+    }
+}
 
 module jumpbox './modules/compute/jumpbox.bicep' = {
     name: 'jumpbox'
