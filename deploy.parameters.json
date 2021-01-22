@@ -58,9 +58,6 @@
         },
         "apiHostname": {
             "value": "__apiHostname__"
-        },
-        "secretName": {
-            "value": "__secretName__"
         }
     }
 }
