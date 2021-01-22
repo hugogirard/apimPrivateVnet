@@ -17,7 +17,10 @@ env:
 jobs:
   deploy_keyvault_resources:
     runs-on: ubuntu-latest 
-    
+
+    outputs:
+      vaultGeneratedName: ${{ steps.deployVault.outputs.vaultGeneratedName }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -40,7 +43,7 @@ jobs:
          az group create -n ${{ env.APIM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}
 
       - name: Deploy KeyVault Resources
-        id: deployapim
+        id: deployVault
         uses: Azure/arm-deploy@v1.0.1
         with:        
           scope: resourcegroup          
@@ -48,5 +51,12 @@ jobs:
           region: ${{ env.LOCATION }}        
           resourceGroupName: ${{ env.APIM_RESOURCE_GROUP_NAME }}        
           template: bicep/keyvault.json   
-          parameters: principalAdminObjectId=${{ secrets.ADMIN_VAULT_OBJECT_ID }} vaultName=${{ secrets.VAULT_NAME }} spIdentity=${{ secrets.SP_PRINCIPAL_OBJECT_ID }}
+          parameters: principalAdminObjectId=${{ secrets.ADMIN_VAULT_OBJECT_ID }} spIdentity=${{ secrets.SP_PRINCIPAL_OBJECT_ID }}
           deploymentMode: Incremental      
+
+      - name: Create GitHub Secret GatewaySubnet
+        uses: gliech/create-github-secret-action@v1.4.2
+        with:
+          name: VAULT_NAME
+          value:  ${{ needs.deployVault.outputs.vaultGeneratedName }}
+          pa_token: ${{ secrets.PA_TOKEN }}          

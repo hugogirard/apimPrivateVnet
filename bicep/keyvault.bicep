@@ -1,8 +1,8 @@
 param principalAdminObjectId string
-param vaultName string
 param spIdentity string
 
 var location = resourceGroup().location
+var vaultName = concat('vault',uniqueString(resourceGroup().id))
 
 resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
     name: vaultName
@@ -41,3 +41,5 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
         ]        
     }
 }
+
+output vaultGeneratedName string = vaultName
