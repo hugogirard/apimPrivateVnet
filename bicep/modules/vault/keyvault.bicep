@@ -65,12 +65,10 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
               objectId: apimIdentity
               permissions: {
                 secrets: [
-                  'get'
-                  'list'
+                  'all'                  
                 ]
-                certificates: [
-                  'get'
-                  'list'
+                certificates: [                  
+                  'all'
                 ]
               }
             }                                          
