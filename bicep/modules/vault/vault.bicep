@@ -43,3 +43,5 @@ resource accessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2019-09-01' = 
     ]
   }
 }
+
+output userIdentityId string = identity.id

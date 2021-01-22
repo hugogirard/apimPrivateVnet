@@ -22,6 +22,8 @@ jobs:
     # Map outputs of the job
     outputs:
       apimSubnetCIDR: ${{ steps.deployapim.outputs.apimSubnetCIDR }}
+      appGwIdentity: ${{ steps.deployapim.outputs.identityId }}
+      gwSubnetId: ${{ steps.deployapim.outputs.gwSubnetId }}
 
     steps:
       - uses: actions/checkout@v2
@@ -69,6 +71,21 @@ jobs:
           template: bicep/deploy.json   
           parameters: deploy.parameters.json
           deploymentMode: Incremental     
+
+      - name: Create GitHub Secret AppGwIdentity
+        uses: gliech/create-github-secret-action@v1.4.2
+        with:
+          name: GW_IDENTITY
+          value:  ${{ needs.deploy_apim_resources.outputs.appGwIdentity }}
+          pa_token: ${{ secrets.PA_TOKEN }}
+
+      - name: Create GitHub Secret GatewaySubnet
+        uses: gliech/create-github-secret-action@v1.4.2
+        with:
+          name: GW_SUBNET_CIDR
+          value:  ${{ needs.deploy_apim_resources.outputs.gwSubnetId }}
+          pa_token: ${{ secrets.PA_TOKEN }}          
+
 
   deploy_onpremise_resources:
     runs-on: ubuntu-latest
