@@ -1,12 +1,18 @@
 param vaultName string
-param apimIdentity string
 
 var identityName = 'apggwuseridentity'
+var apimManagedIdentity = 'apimIdentity'
 var location = resourceGroup().location
 
 // Identity used in Application Gateway
 resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   name: identityName
+  location: location
+}
+
+
+resource apimIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: apimManagedIdentity
   location: location
 }
 
@@ -31,7 +37,7 @@ resource accessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2019-09-01' = 
       }   
       {
         tenantId: subscription().tenantId
-        objectId: reference(apimIdentity).principalId
+        objectId: reference(apimIdentity.id).principalId
         permissions: {
           secrets: [
             'get'

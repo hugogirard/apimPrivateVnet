@@ -71,18 +71,10 @@ module sql './modules/sql/sql.bicep' = {
     }
 }
 
-module identity './modules/identity/identity.bicep' = {
-    name: 'identity'
-}
-
 module vault './modules/vault/vault.bicep' = {
     name: 'vault'
-    dependsOn: [
-        identity
-    ]
     params: {
         vaultName: vaultName
-        apimIdentity: identity.outputs.apimManagedIdenity
     }
 }
 
