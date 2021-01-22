@@ -89,6 +89,12 @@ jobs:
           value: ${{ needs.deploy_apim_resources.outputs.identityId }}
           pa_token: ${{ secrets.PA_TOKEN }}                   
 
+      - name: Print Outputs
+        run: |
+         echo ${{ needs.deploy_apim_resources.outputs.gwSubnetId }}
+         echo ${{ needs.deploy_apim_resources.outputs.apiHostname }}
+         echo ${{ needs.deploy_apim_resources.outputs.identityId }}
+
   deploy_onpremise_resources:
     runs-on: ubuntu-latest
     needs: deploy_apim_resources
