@@ -17,10 +17,20 @@ resource apim 'Microsoft.ApiManagement/service@2019-12-01' = {
         virtualNetworkConfiguration: {
             subnetResourceId: subnetResourceId
         }
+        hostnameConfigurations: [
+            {
+                type: 'Proxy'
+                hostName: apiHostname
+                keyVaultId: concat(reference(keyVaultName).vaultUri,'secrets/${secretName}')
+                identityClientId: reference(managedIdentityId).clientId
+                negotiateClientCertificate: false
+                defaultSslBinding: true
+            }
+        ]        
         virtualNetworkType: 'Internal'
         publisherEmail: publisherEmail
         publisherName: publisherName
-    }
+    }    
     identity: {
         type: 'UserAssigned'
         userAssignedIdentities: {
