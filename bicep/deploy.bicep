@@ -86,38 +86,38 @@ module vault './modules/vault/vault.bicep' = {
     }
 }
 
-module apim './modules/apim/apim.bicep' = {
-    name: 'apim'
-    dependsOn: [
-        network
-        vault
-    ]
-    params: {
-        publisherName: publisherName
-        publisherEmail: publisherEmail
-        subnetResourceId: network.outputs.subnetApim
-        apiHostname: apiHostname
-        keyVaultName: vaultName
-        secretName: secretName
-        managedIdentityId: identity.outputs.apimManagedIdenity
-    }
-}
+// module apim './modules/apim/apim.bicep' = {
+//     name: 'apim'
+//     dependsOn: [
+//         network
+//         vault
+//     ]
+//     params: {
+//         publisherName: publisherName
+//         publisherEmail: publisherEmail
+//         subnetResourceId: network.outputs.subnetApim
+//         apiHostname: apiHostname
+//         keyVaultName: vaultName
+//         secretName: secretName
+//         managedIdentityId: identity.outputs.apimManagedIdenity
+//     }
+// }
 
 
 
-module dns './modules/dns/dns.bicep' = {
-    name: 'dns'
-    dependsOn: [
-        apim
-        network
-    ]
-    params: {
-        dnsZoneName: hostname
-        apimIpAddress: apim.outputs.apimPrivateIp
-        vnetId: network.outputs.vnetId
-        vnetName: vnetName
-    }
-}
+// module dns './modules/dns/dns.bicep' = {
+//     name: 'dns'
+//     dependsOn: [
+//         apim
+//         network
+//     ]
+//     params: {
+//         dnsZoneName: hostname
+//         apimIpAddress: apim.outputs.apimPrivateIp
+//         vnetId: network.outputs.vnetId
+//         vnetName: vnetName
+//     }
+// }
 
 module jumpbox './modules/compute/jumpbox.bicep' = {
     name: 'jumpbox'
