@@ -1,0 +1,47 @@
+name: Deploy Application Gateway Infra
+
+on:  
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - 'bicep/*.bicep'      
+#      - '.github/workflows/deploy-apim.yml'
+
+  workflow_dispatch:
+    
+env:
+  APIM_RESOURCE_GROUP_NAME: api-demo-rg
+  LOCATION: eastus
+
+jobs:
+  deploy_appgw_resources:
+    runs-on: ubuntu-latest 
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      # Login to Azure
+      - name: Azure Login
+        uses: Azure/login@v1.1
+        with:          
+          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
+          enable-AzPSSession: false
+      
+      # Compile bicep files
+      - name: Bicep Build
+        uses: aliencube/bicep-build-actions@v0.1
+        with:
+          files: bicep/appgw.bicep
+                                              
+      - name: Deploy APIM Resources
+        id: deployapim
+        uses: Azure/arm-deploy@v1.0.1
+        with:        
+          scope: resourcegroup          
+          subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
+          region: ${{ env.LOCATION }}        
+          resourceGroupName: ${{ env.APIM_RESOURCE_GROUP_NAME }}        
+          template: bicep/appgw.json   
+          parameters: gwSubnetId=${{ secrets.GW_SUBNET_ID }} certLink=${{ secrets.CERT_LINK }} apiGwHostname=${{ secrets.API_GW_HOSTNAME }} identityId=${{ secrets.API_GW_IDENTITYID }}
+          deploymentMode: Incremental          

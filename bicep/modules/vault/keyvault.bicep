@@ -72,6 +72,10 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
                   'get'
                   'list'
                 ]
+                keys: [
+                  'get'
+                  'list'                  
+                ]
               }
             }                                          
         ]        
