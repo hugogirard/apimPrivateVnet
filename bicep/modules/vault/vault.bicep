@@ -31,7 +31,7 @@ resource accessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2019-09-01' = 
       }   
       {
         tenantId: subscription().tenantId
-        objectId: apimIdentity
+        objectId: reference(apimIdentity).principalId
         permissions: {
           secrets: [
             'get'
