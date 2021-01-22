@@ -21,8 +21,7 @@ resource apim 'Microsoft.ApiManagement/service@2019-12-01' = {
             {
                 type: 'Proxy'
                 hostName: apiHostname
-                keyVaultId: concat(reference(keyVaultName).vaultUri,'secrets/${secretName}')
-                identityClientId: reference(managedIdentityId).clientId
+                keyVaultId: concat('https://managementhgvault.vault.azure.net/','secrets/${secretName}')
                 negotiateClientCertificate: false
                 defaultSslBinding: true
             }
