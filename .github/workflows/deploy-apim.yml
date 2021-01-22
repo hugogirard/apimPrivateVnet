@@ -48,7 +48,7 @@ jobs:
           files: '["deploy.parameters.json"]'
         env:
           publisherName: ${{ secrets.PUBLISHER_NAME }}
-          publisherEmail: ${{ secrets.APIM_SETTINGS.publisherEmail }}
+          publisherEmail: ${{ secrets.PUBLISHER_EMAIL }}
           adminUsernameSql: ${{ secrets.ADMIN_USERNAME_SQL }}
           adminPasswordSql: ${{ secrets.ADMIN_PASSWORD_SQL }}
           hostname: ${{ secrets.HOSTNAME }}
