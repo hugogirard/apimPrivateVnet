@@ -125,4 +125,4 @@ module jumpbox './modules/compute/jumpbox.bicep' = {
 
 output gwSubnetId string = network.outputs.subnetAppGw
 output apimSubnetCIDR string =  apimSubnet
-output identityId string = vault.outputs.userIdentityId
+output identityId string = 'test'
