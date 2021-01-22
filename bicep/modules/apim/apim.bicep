@@ -33,7 +33,7 @@ resource apim 'Microsoft.ApiManagement/service@2019-12-01' = {
     identity: {
         type: 'UserAssigned'
         userAssignedIdentities: {
-            managedIdentityId: {
+            '${managedIdentityId}': {
                 
             }
         }
