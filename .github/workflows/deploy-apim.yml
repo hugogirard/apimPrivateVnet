@@ -74,26 +74,26 @@ jobs:
       - uses: gliech/create-github-secret-action@v1
         with:
           name: GW_SUBNET_ID
-          value: ${{ steps.deploy_apim_resources.outputs.gwSubnetId }}
+          value: ${{ steps.deployapim.outputs.gwSubnetId }}
           pa_token: ${{ secrets.PA_TOKEN }}
 
       - uses: gliech/create-github-secret-action@v1
         with:
           name: API_GW_HOSTNAME
-          value: ${{ steps.deploy_apim_resources.outputs.apiHostname }}
+          value: ${{ steps.deployapim.outputs.apiHostname }}
           pa_token: ${{ secrets.PA_TOKEN }}          
 
       - uses: gliech/create-github-secret-action@v1
         with:
           name: API_GW_IDENTITYID
-          value: ${{ steps.deploy_apim_resources.outputs.identityId }}
+          value: ${{ steps.deployapim.outputs.identityId }}
           pa_token: ${{ secrets.PA_TOKEN }}                   
 
       - name: Print Outputs
         run: |
-         echo ${{ steps.deploy_apim_resources.outputs.gwSubnetId }}
-         echo ${{ steps.deploy_apim_resources.outputs.apiHostname }}
-         echo ${{ steps.deploy_apim_resources.outputs.identityId }}
+         echo ${{ steps.deployapim.outputs.gwSubnetId }}
+         echo ${{ steps.deployapim.outputs.apiHostname }}
+         echo ${{ steps.deployapim.outputs.identityId }}
 
   deploy_onpremise_resources:
     runs-on: ubuntu-latest
