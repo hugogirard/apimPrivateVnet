@@ -1,0 +1,25 @@
+name: Teardown
+
+on:
+  workflow_dispatch:
+
+env:
+  APIM_RESOURCE_GROUP_NAME: api-demo-rg
+  ON_PREM_RESOURCE_GROUP_NAME: onprem-demo-rg
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Login to Azure
+      - name: Azure Login
+        uses: Azure/login@v1.1
+        with:          
+          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
+          enable-AzPSSession: false
+          
+      - name: TeardDown
+        run: |
+          az group delete --name ${{ env.ON_PREM_RESOURCE_GROUP_NAME }} --yes
+          az group delete --name ${{ env.APIM_RESOURCE_GROUP_NAME }} --yes
