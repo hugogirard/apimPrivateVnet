@@ -1,0 +1,16 @@
+{
+  "name": "secretsLauncher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node launcher"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@octokit/rest": "^18.0.15",
+    "tweetsodium": "0.0.5"
+  }
+}
