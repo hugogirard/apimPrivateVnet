@@ -20,7 +20,7 @@ $azParams = @{
     AZSubscriptionId=$aZSubscriptionId
     AZTenantId=$aZTenantId
     AZAppUsername=$aZAppUsername
-    AZAppPasswordInsecure=$aZAppPasswordInsecure
+    AZAppPasswordInsecure=$aZAppPassword
 }
 
 try {
