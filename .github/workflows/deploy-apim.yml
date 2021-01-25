@@ -94,12 +94,6 @@ jobs:
           value: ${{ steps.deployapim.outputs.identityId }}
           pa_token: ${{ secrets.PA_TOKEN }}                   
 
-      - name: Print Outputs
-        run: |
-         echo ${{ steps.deployapim.outputs.gwSubnetId }}
-         echo ${{ steps.deployapim.outputs.apiHostname }}
-         echo ${{ steps.deployapim.outputs.identityId }}
-
   deploy_onpremise_resources:
     runs-on: ubuntu-latest
     needs: deploy_apim_resources

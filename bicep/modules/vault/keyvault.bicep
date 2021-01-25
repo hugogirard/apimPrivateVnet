@@ -83,3 +83,4 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
 }
 
 output vaultGeneratedName string = vaultName
+output userIdentityId string = identity.id 

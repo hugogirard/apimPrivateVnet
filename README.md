@@ -95,3 +95,16 @@ Now is time to run the Github Action that will create all the Azure Resources, f
 | ADMIN_USERNAME       | The admin username of the Jumpbox and on prem VM      |
 | ADMIN_PASSWORD       | The password of the Jumpbox and on prem VM            |
 | SUBSCRIPTION_ID      | The subscription ID where to deploy the Az Resources  |
+
+# Error during deploying KeyVault
+
+If an error of Keyvault soft delete occurs when running the Github action this mean you have some keyvault pending because of the soft delete.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/errorVault.png?raw=true'/>
+
+In this case you need to run those commands in the proper subscription using **Azure CLI**.
+
+```
+$ az keyvault list-deleted
+$ az keyvault purge --name <name of the vault> 
+```
