@@ -160,6 +160,10 @@ Now do a nslookup from your computer, this should use the public ip of the Appli
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionpublic.png?raw=true' />
 
+# URL Scheme
+
+Because end-to-end encryption is not done and the SSL stop at AppGW Level, when configure your API be sure to set the URL Scheme to both.
+
 # Error during deploying KeyVault
 
 If an error of Keyvault soft delete occurs when running the Github action this mean you have some keyvault pending because of the soft delete.
