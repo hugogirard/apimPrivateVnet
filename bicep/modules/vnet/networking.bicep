@@ -13,6 +13,14 @@ var jumpboxSubnetName = 'jumpboxSubnet'
 var webServerSubnetName = 'webWorkloadSubnet'
 var gwSubnetName = 'gatewaySubnet'
 
+resource nsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
+    name: 'nsg-jumpbox'
+    location: location
+    properties: {
+        securityRules: []
+    }
+}
+
 resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
     name: vnetName
     location: location
@@ -39,6 +47,9 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
                 name: jumpboxSubnetName
                 properties: {
                     addressPrefix: jumpboxSubnet
+                    networkSecurityGroup: {
+                        id: nsg.id
+                    }
                 }
             }
             {

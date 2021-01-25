@@ -14,11 +14,9 @@ Here the tool you need to installe on your machine.
 
 - Install the official [Powershell](https://github.com/rmbolger/Posh-ACME) **Let's Encrypt client**
 
-Here the [list](https://letsencrypt.org/docs/client-options/) of all supported clients if you want to implement your own logic.
+- Dotnet 3.1 SDK
 
-### Create an Azure Key Vault ###
-
-If you don't have an Azure Key Vault this is the first step, refer to the [Microsoft Doc](https://docs.microsoft.com/en-us/azure/key-vault/general/quick-create-portal) to create one.
+Here the [list](https://letsencrypt.org/docs/client-options/) of all supported clients if you want to implement your own logic for the **Let's Encrypt Certificate**.
 
 ### Create Azure DNS Public Zone
 
@@ -28,12 +26,12 @@ It's all explain [here](https://docs.microsoft.com/en-us/azure/dns/dns-getstarte
 
 ### Run this step ONLY if you don't have a SSL certificate
 
-Be sure you already configured **Azure Key Vault** and your **Azure Public DNS Zone**.
+Be sure you already configured your **Azure Public DNS Zone**.
 
 First create a service principal running the following command.
 
 ```Bash
-$ az ad sp create-for-rbac --name ServicePrincipalName
+$ az ad sp create-for-rbac --name <ServicePrincipalName>
 ```
 
 Take note of the output you will need it to create Github Secrets.
@@ -62,7 +60,47 @@ If you browse in it inside the last child folder of **acme-v02.api.letsencrypt.o
 
 <img src="https://raw.githubusercontent.com/hugogirard/apimPrivateVnet/main/images/certificate.png">
 
-### Upload your certificate in Azure Key Vault
+# Creating Azure Resources
+
+## Step 1 - Create Github Secrets
+
+To create the architecture and all Azure resources you need to setup some Github Secrets before.
+
+Here the list of all Github secrets that need to create before running the Github Action.
+
+| Secret Name          | Description                                           | Link
+| ---------------------| ------------------------------------------------------| ---------
+| ADMIN_VAULT_OBJECT_ID| This is the object ID of the super admin that you want to give access to KeyVault |
+| PA_TOKEN             | You need to have a personnal access token to write secrets after running the first github action.  You can find the information (here)[https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token].  The PA needs the public_repo scope.  This is needed for this specific (github action)[https://github.com/gliech/create-github-secret-action]. |
+| SP_AZURE_CREDENTIALS | Secret that contains the credential to run Az Login.  | (Action)[https://github.com/marketplace/actions/azure-login]
+| PUBLISHER_NAME       | The publisher name associated to APIM                 |
+| PUBLISHER_EMAIL      | The publisher email associated to APIM                |
+| ADMIN_USERNAME_SQL   | The username admin for the SQL Azure Database         |
+| ADMIN_PASSWORD_SQL   | The password for the SQL Azure Database               |
+| HOSTNAME             | The hostname of your domain like contoso.com          |
+| ADMIN_USERNAME       | The admin username of the Jumpbox and on prem VM      |
+| ADMIN_PASSWORD       | The password of the Jumpbox and on prem VM            |
+| SUBSCRIPTION_ID      | The subscription ID where to deploy the Az Resources  |
+| SP_PRINCIPAL_OBJECT_ID | The object ID related to the SP that run the github action |
+| SUBSCRIPTION_ID      | The subscription ID where you run the github action |
+
+## Step 2 - Run Github Action Deploy APIM Infra
+
+Now go in the Actions Tab 
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/actiontab.png?raw=true' />
+
+Select **Deploy APIM Infra**
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/deployApimInfra.png?raw=true' />
+
+On the right menu click the **Run workflow** button and click the **Run workflow** green button.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/runWorkflow.png?raw=true' />
+
+The Github action will take around 45 minutes to complete.  The Github action will create 3 new Github secrets needed to execute the next pipeline.
+
+## Step 3 - Upload your certificate in Azure Key Vault
 
 Now upload you generated or existing certificate in Azure KeyVault.
 
@@ -80,21 +118,47 @@ Copy the value from that textbox you will need to create a Github secret.
 
 <img src="https://github.com/hugogirard/apimPrivateVnet/blob/main/images/identifier.png?raw=true" />
 
-*** Run the Github Action ***
+Now you need to create a new **Github secrets** with the value copied before.  The name of the secret is **CERT_LINK**.
 
-Now is time to run the Github Action that will create all the Azure Resources, first you need to create some Github Secrets.
+## Step 4 - Configure the Gateway of APIM
 
-| Secret Name          | Description                                           | Link
-| ---------------------| ------------------------------------------------------| ---------
-| SP_AZURE_CREDENTIALS | Secret that contains the credential to run Az Login.  | (Action)[https://github.com/marketplace/actions/azure-login]
-| PUBLISHER_NAME       | The publisher name associated to APIM                 |
-| PUBLISHER_EMAIL      | The publisher email associated to APIM                |
-| ADMIN_USERNAME_SQL   | The username admin for the SQL Azure Database         |
-| ADMIN_PASSWORD_SQL   | The password for the SQL Azure Database               |
-| HOSTNAME             | The hostname of your domain like contoso.com          |
-| ADMIN_USERNAME       | The admin username of the Jumpbox and on prem VM      |
-| ADMIN_PASSWORD       | The password of the Jumpbox and on prem VM            |
-| SUBSCRIPTION_ID      | The subscription ID where to deploy the Az Resources  |
+Next go to your API Management and custom domains
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/domains.png?raw=true' />
+
+Create a new hostname for the API Gateway related to your private DNS zone and select the certificate you uploaded in the KeyVault.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/vault.png?raw=true' />
+
+Now retrieve the private IP of the Api Management
+
+Go to your Azure Private DNS Zone and create a new A record entry
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/privatedns.png?raw=true' />
+
+## Step 5 - Run the next Github Action
+
+Now you are ready to run the next **Github Action**, go back to Github Action and select **Deploy Application Gateway Infra** and run the worflow.
+
+Once the Github Action is executed go to your Application Gateway and in the menu **Backend health**.  Be sure the Application Gateway can reach the APIM Gateway.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/backendhealth.png?raw=true' />
+
+## Step 6 - Configure in Azure Public DNS the IP of Application Gateway
+
+Get the public ip of the App GW and add a record in your **Azure Public DNS Zone**.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/publicdns.png?raw=true' />
+
+Use the jumpbox to test the nslookup resolution like the example below.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionprivate.png?raw=true' />
+
+Normally this should use the private IP
+
+Now do a nslookup from your computer, this should use the public ip of the Application Gateway (it can take up to 24 hours to work depending of your DNS server).
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionpublic.png?raw=true' />
 
 # Error during deploying KeyVault
 
