@@ -58,7 +58,12 @@ jobs:
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}
           principalAdminObjectId: ${{ secrets.ADMIN_VAULT_OBJECT_ID }}
           spIdentity: ${{ secrets.SP_PRINCIPAL_OBJECT_ID }}
-                              
+
+      # Create resource group
+      - name: Create Resource Group
+        run: |
+         az group create -n ${{ env.APIM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}  
+
       - name: Deploy APIM Resources
         id: deployapim
         uses: Azure/arm-deploy@v1.0.1
