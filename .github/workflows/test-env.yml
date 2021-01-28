@@ -16,13 +16,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      # Login to Azure
-      - name: Azure Login
-        uses: Azure/login@v1.1
-        with:          
-          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
-          enable-AzPSSession: false
       
       # Compile bicep files
       - name: Bicep Build
@@ -33,8 +26,7 @@ jobs:
       # Deploy ARM Template
       - name: Publish ARM Template
         uses: actions/upload-artifact@v2.2.2
-        with:          
-          name: deploy.json          
+        with:            
           path: |
             bicep/deploy.json
             bicep/onpremise.bicep
