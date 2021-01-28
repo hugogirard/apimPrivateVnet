@@ -5,11 +5,6 @@ on:
    branches:
      - features/deploywebapp
 
-env:
-  APIM_RESOURCE_GROUP_NAME: ${{ secrets.APIM_RESOURCE_GROUP_NAME }}
-  ON_PREM_RESOURCE_GROUP_NAME: ${{ secrets.ON_PREM_RESOURCE_GROUP_NAME }}
-  LOCATION: ${{ secrets.LOCATION }}
-
 jobs:
   compile_bicep:
     runs-on: ubuntu-latest 
@@ -29,4 +24,22 @@ jobs:
         with:            
           path: |
             bicep/deploy.json
-            bicep/onpremise.bicep
+            bicep/onpremise.json
+
+  deploy_dev:
+    runs-on: ubuntu-latest   
+
+    environment:
+      name: HUGO
+      
+    steps:      
+      - name: Azure Login
+        uses: Azure/login@v1.1
+        with:          
+          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
+          enable-AzPSSession: false
+
+      # Create resource group
+      - name: Create Resource Group
+        run: |
+         az group create -n ${{ secrets.APIM_RESOURCE_GROUP_NAME }} -l ${{ secrets.LOCATION }}          
