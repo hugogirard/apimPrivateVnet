@@ -5,8 +5,6 @@ on:
    branches:
      - features/deploywebapp
 
-  workflow_dispatch:
-
 env:
   APIM_RESOURCE_GROUP_NAME: ${{ secrets.APIM_RESOURCE_GROUP_NAME }}
   ON_PREM_RESOURCE_GROUP_NAME: ${{ secrets.ON_PREM_RESOURCE_GROUP_NAME }}
