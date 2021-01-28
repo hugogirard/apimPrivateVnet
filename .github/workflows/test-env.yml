@@ -35,6 +35,6 @@ jobs:
         uses: actions/upload-artifact@v2.2.2
         with:          
           name: deploy.json          
-          path: 
+          path: |
             bicep/deploy.json
             bicep/onpremise.bicep
