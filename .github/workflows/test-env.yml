@@ -27,11 +27,12 @@ jobs:
             bicep/onpremise.json
 
   deploy_dev:
+    needs: compile_bicep
     runs-on: ubuntu-latest   
 
     environment:
       name: HUGO
-      
+
     steps:      
       - name: Azure Login
         uses: Azure/login@v1.1
