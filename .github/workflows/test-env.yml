@@ -28,11 +28,13 @@ jobs:
       - name: Bicep Build
         uses: aliencube/bicep-build-actions@v0.1
         with:
-          files: bicep/deploy.bicep
+          files: bicep/deploy.bicep bicep/onpremise.bicep
 
+      # Deploy ARM Template
       - name: Publish ARM Template
         uses: actions/upload-artifact@v2.2.2
         with:          
           name: deploy.json          
           path: 
             bicep/deploy.json
+            bicep/onpremise.bicep
