@@ -1,12 +1,9 @@
 name: Test-Env
 
 on:  
-#  push:
-#    branches:
-#      - main
-#    paths:
-#      - 'bicep/*.bicep'      
-#      - '.github/workflows/deploy-apim.yml'
+ push:
+   branches:
+     - features/deploywebapp
 
   workflow_dispatch:
 
