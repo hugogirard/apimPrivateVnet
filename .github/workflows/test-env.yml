@@ -1,0 +1,43 @@
+name: Test-Env
+
+on:  
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - 'bicep/*.bicep'      
+#      - '.github/workflows/deploy-apim.yml'
+
+  workflow_dispatch:
+
+env:
+  APIM_RESOURCE_GROUP_NAME: ${{ secrets.APIM_RESOURCE_GROUP_NAME }}
+  ON_PREM_RESOURCE_GROUP_NAME: ${{ secrets.ON_PREM_RESOURCE_GROUP_NAME }}
+  LOCATION: ${{ secrets.LOCATION }}
+
+jobs:
+  compile_bicep:
+    runs-on: ubuntu-latest 
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Login to Azure
+      - name: Azure Login
+        uses: Azure/login@v1.1
+        with:          
+          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
+          enable-AzPSSession: false
+      
+      # Compile bicep files
+      - name: Bicep Build
+        uses: aliencube/bicep-build-actions@v0.1
+        with:
+          files: bicep/deploy.bicep
+
+      - name: Publish ARM Template
+        uses: actions/upload-artifact@v2.2.2
+        with:          
+          name: deploy.json          
+          path: 
+            bicep/deploy.json
