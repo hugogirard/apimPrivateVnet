@@ -23,6 +23,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.2
         with:            
           path: |
+            deploy.parameters.json
             bicep/deploy.json
             bicep/onpremise.json
 
@@ -31,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest   
 
     environment:
-      name: HUGO
+      name: DEV
 
     steps:      
       - name: Azure Login
@@ -43,4 +44,22 @@ jobs:
       # Create resource group
       - name: Create Resource Group
         run: |
-         az group create -n ${{ secrets.APIM_RESOURCE_GROUP_NAME }} -l ${{ secrets.LOCATION }}          
+         az group create -n ${{ secrets.APIM_RESOURCE_GROUP_NAME }} -l ${{ secrets.LOCATION }}
+
+      # Replace parameters with secrets
+      - name: Replace tokens
+        uses: cschleiden/replace-tokens@v1.0
+        with:        
+          tokenPrefix: __        
+          tokenSuffix: __        
+          files: '["deploy.parameters.json"]'
+        env:
+          publisherName: ${{ secrets.PUBLISHER_NAME }}
+          publisherEmail: ${{ secrets.PUBLISHER_EMAIL }}
+          adminUsernameSql: ${{ secrets.ADMIN_USERNAME_SQL }}
+          adminPasswordSql: ${{ secrets.ADMIN_PASSWORD_SQL }}
+          hostname: ${{ secrets.HOSTNAME }}
+          adminUsername: ${{ secrets.ADMIN_USERNAME }}
+          adminPassword: ${{ secrets.ADMIN_PASSWORD }}
+          principalAdminObjectId: ${{ secrets.ADMIN_VAULT_OBJECT_ID }}
+          spIdentity: ${{ secrets.SP_PRINCIPAL_OBJECT_ID }}              
