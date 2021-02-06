@@ -125,3 +125,6 @@ output gwSubnetId string = network.outputs.subnetAppGw
 output apimSubnetCIDR string =  apimSubnet
 output apiHostname string = 'api.${hostname}'
 output identityId string = vault.outputs.userIdentityId
+output webAppName string = web.outputs.webName
+output todoWebUrl string = web.outputs.todoWebUrl
+output todoApiName string = web.outputs.todoApiName
