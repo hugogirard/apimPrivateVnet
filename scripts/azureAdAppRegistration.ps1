@@ -8,8 +8,7 @@
 
 [CmdletBinding()]
 param(
-    [PSCredential] $Credential,
-    [Parameter(Mandatory=$False)]
+    [Parameter(Mandatory=$True)]
     [string]$todoWebBaseUrl
 )
 
@@ -57,14 +56,38 @@ Function CreateScope( [string] $value, [string] $userConsentDisplayName, [string
     return $scope
 }
 
+Function GetRequiredPermissions([string] $applicationDisplayName, [string] $requiredDelegatedPermissions, [string]$requiredApplicationPermissions, $servicePrincipal)
+{
+    # If we are passed the service principal we use it directly, otherwise we find it from the display name (which might not be unique)
+    if ($servicePrincipal)
+    {
+        $sp = $servicePrincipal
+    }
+    else
+    {
+        $sp = Get-AzureADServicePrincipal -Filter "DisplayName eq '$applicationDisplayName'"
+    }
+    $appid = $sp.AppId
+    $requiredAccess = New-Object Microsoft.Open.AzureAD.Model.RequiredResourceAccess
+    $requiredAccess.ResourceAppId = $appid 
+    $requiredAccess.ResourceAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]
+
+    # $sp.Oauth2Permissions | Select Id,AdminConsentDisplayName,Value: To see the list of all the Delegated permissions for the application:
+    if ($requiredDelegatedPermissions)
+    {
+        AddResourcePermission $requiredAccess -exposedPermissions $sp.Oauth2Permissions -requiredAccesses $requiredDelegatedPermissions -permissionType "Scope"
+    }
+    
+    # $sp.AppRoles | Select Id,AdminConsentDisplayName,Value: To see the list of all the Application permissions for the application
+    if ($requiredApplicationPermissions)
+    {
+        AddResourcePermission $requiredAccess -exposedPermissions $sp.AppRoles -requiredAccesses $requiredApplicationPermissions -permissionType "Role"
+    }
+    return $requiredAccess
+}
+
 Function ConfigureApplications([string]$appName,[string]$scopeName)
 {
-    #$commonendpoint = "common"
-
-    #$tenantId = $creds.Tenant.Id
-
-    #$tenant = Get-AzureADTenantDetail
-    #$tenantName =  ($tenant.VerifiedDomains | Where { $_._Default -eq $True }).Name
 
     # Get the user running the script to add the user as the app owner
     $user = Get-AzureADUser -ObjectId $creds.Account.Id    
@@ -77,7 +100,6 @@ Function ConfigureApplications([string]$appName,[string]$scopeName)
    $fromDate = [DateTime]::Now;   
 
    $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
-   $serviceAppKey = $pw   
 
    $serviceAadApplication = New-AzureADApplication -DisplayName $appName `
                                                    -AvailableToOtherTenants $False `
@@ -89,13 +111,8 @@ Function ConfigureApplications([string]$appName,[string]$scopeName)
 
    # create the service principal of the newly created application 
    $currentAppId = $serviceAadApplication.AppId
-   $serviceServicePrincipal = New-AzureADServicePrincipal -AppId $currentAppId -Tags {WindowsAzureActiveDirectoryIntegratedApp}   
-
-   $owner = Get-AzureADApplicationOwner -ObjectId $serviceAadApplication.ObjectId
-   if ($owner -eq $null)
-   { 
-        Add-AzureADApplicationOwner -ObjectId $serviceAadApplication.ObjectId -RefObjectId $user.ObjectId
-   }
+  
+    Add-AzureADApplicationOwner -ObjectId $serviceAadApplication.ObjectId -RefObjectId $user.ObjectId
 
     # rename the user_impersonation scope if it exists to match the readme steps or add a new scope
     $scopes = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.OAuth2Permission]
@@ -117,14 +134,49 @@ Function ConfigureApplications([string]$appName,[string]$scopeName)
     Set-AzureADApplication -ObjectId $serviceAadApplication.ObjectId -OAuth2Permission $scopes    
 
     Write-Host "Done creating the service application $appName"
-    Write-Host "$appName AppId $currentAppId"
-    Write-Host "$appName Scope api://$serviceAadApplication.AppId/$scopeName"
+    Write-Host "$appName ClientId $currentAppId"
+    Write-Host "$appName Scope $serviceIdentifierUri/$scopeName"
 
 }
 
+Function ConfigureTodoWeb([string]$todoWebBaseUrl)
+{
+   # Get a 2 years application key for the client Application
+   $pw = ComputePassword
+   $fromDate = [DateTime]::Now;
+   $key = CreateAppKey -fromDate $fromDate -durationInYears 2 -pw $pw
+   $user = Get-AzureADUser -ObjectId $creds.Account.Id 
+
+   $tenant = Get-AzureADTenantDetail
+   $tenantName =  ($tenant.VerifiedDomains | Where { $_._Default -eq $True }).Name
+
+   $clientAadApplication = New-AzureADApplication -DisplayName "TodoWeb" `
+                                                  -HomePage $todoWebBaseUrl `
+                                                  -LogoutUrl "$todoWebBaseUrl/signout-oidc" `
+                                                  -ReplyUrls "$todoWebBaseUrl/signin-oidc" `
+                                                  -IdentifierUris "https://$tenantName/TodoWeb" `
+                                                  -AvailableToOtherTenants $False `
+                                                  -PasswordCredentials $key `
+                                                  -PublicClient $False   
+   
+   Add-AzureADApplicationOwner -ObjectId $clientAadApplication.ObjectId -RefObjectId $user.ObjectId
+
+   
+#    $requiredResourcesAccess = New-Object System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.RequiredResourceAccess]
+
+#    $requiredPermissions = GetRequiredPermissions -applicationDisplayName "TodoWeb" `
+#                                                  -requiredDelegatedPermissions "Todo.Api.All" `
+
+#    $requiredResourcesAccess.Add($requiredPermissions)   
+   
+#    Set-AzureADApplication -ObjectId $clientAadApplication.ObjectId -RequiredResourceAccess $requiredResourcesAccess   
+}
+
 $creds = Connect-AzureAD
+
 Write-Host "TenantId: $creds.Tenant.Id"
 
 
 ConfigureApplications 'TodoApi' 'Todo.Api.All'
 ConfigureApplications 'WeatherApi' 'Weather.Get.All'
+ConfigureTodoWeb $todoWebBaseUrl
