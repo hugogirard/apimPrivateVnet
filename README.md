@@ -1,6 +1,6 @@
 # What this github does
 
-N/A
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/diagram/architecture.png?raw=true' />
 
 ## Prerequisites
 
