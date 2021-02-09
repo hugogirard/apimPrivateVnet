@@ -58,3 +58,7 @@ resource wcf 'Microsoft.Web/sites@2019-08-01' = {
     serverFarmId: appserviceWeb.id
   }  
 }
+
+output todoWebUrl string = 'https://${web.properties.hostNames[0]}'
+output webName string = web.name
+output todoApiName string = api.name

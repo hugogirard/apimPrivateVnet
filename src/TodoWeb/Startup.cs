@@ -35,7 +35,7 @@ namespace TodoWeb
             services.AddApplicationInsightsTelemetry();
 
             services.AddSingleton<ITelemetryInitializer, TelemetryInitializer>();
-
+            
             //Add authentication with Microsoft identity platform.
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
                     .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
@@ -43,6 +43,7 @@ namespace TodoWeb
 
             services.AddHttpClient<IToDoListService, ToDoListService>();
             services.AddHttpClient<IWeatherService, WeatherService>();
+            services.AddHttpClient<IFibonacciService, FibonacciService>();
 
             services.AddControllersWithViews(options =>
             {

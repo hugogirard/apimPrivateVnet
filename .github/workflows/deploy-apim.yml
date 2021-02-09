@@ -92,7 +92,13 @@ jobs:
         with:
           name: API_GW_IDENTITYID
           value: ${{ steps.deployapim.outputs.identityId }}
-          pa_token: ${{ secrets.PA_TOKEN }}                   
+          pa_token: ${{ secrets.PA_TOKEN }}        
+
+      - uses: gliech/create-github-secret-action@v1
+        with:
+          name: API_GW_IDENTITYID
+          value: ${{ steps.deployapim.outputs.identityId }}
+          pa_token: ${{ secrets.PA_TOKEN }}                        
 
   deploy_onpremise_resources:
     runs-on: ubuntu-latest
@@ -141,4 +147,4 @@ jobs:
           resourceGroupName: ${{ env.ON_PREM_RESOURCE_GROUP_NAME }}        
           template: bicep/onpremise.json   
           parameters: onpremise.parameters.json
-          deploymentMode: Incremental              
+          deploymentMode: Incremental
