@@ -3,12 +3,12 @@ name: Deploy APIM Infra
 on:  
  push:
    branches:
-     - fix/fixpipeline
+     - 'fix/fixpipeline'
 #    paths:
 #      - 'bicep/*.bicep'      
 #      - '.github/workflows/deploy-apim.yml'
 
-  workflow_dispatch:
+#  workflow_dispatch:
     
 env:
   APIM_RESOURCE_GROUP_NAME: api-demo-fix-rg
