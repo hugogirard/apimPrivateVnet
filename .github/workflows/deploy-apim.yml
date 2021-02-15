@@ -1,9 +1,9 @@
 name: Deploy APIM Infra
 
 on:  
-#  push:
-#    branches:
-#      - main
+ push:
+   branches:
+     - fix/fixpipeline
 #    paths:
 #      - 'bicep/*.bicep'      
 #      - '.github/workflows/deploy-apim.yml'
@@ -11,8 +11,8 @@ on:
   workflow_dispatch:
     
 env:
-  APIM_RESOURCE_GROUP_NAME: api-demo-rg
-  ON_PREM_RESOURCE_GROUP_NAME: onprem-demo-rg
+  APIM_RESOURCE_GROUP_NAME: api-demo-fix-rg
+  ON_PREM_RESOURCE_GROUP_NAME: onprem-demo-fix-rg
   LOCATION: eastus
 
 jobs:

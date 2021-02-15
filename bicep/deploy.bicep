@@ -58,7 +58,10 @@ module web './modules/webapp/webapp.bicep' = {
     name: 'web'
     dependsOn: [
         network
-    ]    
+    ]
+    params: {
+        subnetId: network.outputs.webServerSubnetId
+    }    
 }
 
 module sql './modules/sql/sql.bicep' = {
