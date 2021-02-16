@@ -171,6 +171,11 @@ jobs:
         with:
           files: bicep/peering.bicep      
 
+      - name: PrintVariables
+        run: |
+          echo ${{ needs.deploy_apim_resources.outputs.vpnId }}
+          echo ${{ needs.deploy_onpremise_resources.outputs.vpnId }}
+
       - name: Replace tokens
         uses: cschleiden/replace-tokens@v1.0
         with:        
