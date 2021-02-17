@@ -1,6 +1,27 @@
-# What this github does
+- [About this sample](#about-this-sample)
+- [Prerequisites](#prerequisites)
+  - [Create Azure DNS Public Zone](#create-azure-dns-public-zone)
+  - [Create Wildcard Certificate](#run-this-step-only-if-you-dont-have-a-ssl-certificate)
+- [Creating Azure Resources](#creating-azure-resources)
+  - [Step 1 - Create Github Secrets](#step-1-create-github-secrets)
+  - [Step 2 - Run Github Action Deploy APIM Infra](#step-2-run-github-action-deploy-apim-infra)
+  - [Step 3 - Upload your certificate in Azure Key Vault](#step-3-upload-your-certificate-in-azure-key-vault)
+  - [Step 4 - Configure the Gateway of APIM](#step-4-configure-the-gateway-of-apim)
+  - [Step 5 - Run the next Github Action](#step-5-run-the-next-github-action)
+  - [Step 6 - Configure in Azure Public DNS the IP of Application Gateway](#step-6-configure-in-azure-public-dns-the-ip-of-application-gateway)
+- [Error during deploying KeyVault](#error-during-deploying-keyVault)
+- [Optional](#optional)
+  - [Deploy webapp provided](#deploy-webapp-provided)
+
+
+# About this sample
+
+This sample provide two Github action that will create all the infrastructure in place to have a private APIM exposed to public Internet using Application Gateway with WAF.
+
+3 samples application are available in the Github repository but are not deployed today with the Github Actions, this need to be done manually if desired.
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/diagram/architecture.png?raw=true' />
+
 
 ## Prerequisites
 
@@ -161,6 +182,12 @@ Now do a nslookup from your computer, this should use the public ip of the Appli
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionpublic.png?raw=true' />
 
+# Step 7 - Create the VNET to VNET Gateway Connection
+
+This sample create two resources group, each one with a VPN Gateway, you will need to create a connection between them to mock cloud to on premise environment.
+
+For more details how to do this click [here](https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-vnet-vnet-resource-manager-portal)
+
 # URL Scheme
 
 Because end-to-end encryption is not done and the SSL stop at AppGW Level, when configure your API be sure to set the URL Scheme to both.
@@ -177,3 +204,18 @@ In this case you need to run those commands in the proper subscription using **A
 $ az keyvault list-deleted
 $ az keyvault purge --name <name of the vault> 
 ```
+
+# Optional
+
+Those steps are only required if you want to deploy the web application provided in this sample.
+
+## Deploy webapp provided
+
+This Github contains 3 app used for the demo
+
+--> Apps
+
+The TodoWeb is the front end MVC app, the TodoApi is the one hosted in the cloud and Weather API is the one hosted in the Virtual Machine.
+
+How to deploy those applications are out of this scope but the next section will show you want you need to register in your Azure Active Directory and which appsettings is needed in the Azure Portal.
+
