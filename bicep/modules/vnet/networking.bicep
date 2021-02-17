@@ -61,6 +61,15 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
                             service: 'Microsoft.Sql'
                         }
                     ]
+                    delegations: [ 
+                        {
+                            name: 'delegation'
+                            properties: {
+                                serviceName: 'Microsoft.Web/serverFarms' 
+                            }
+                        }
+                        
+                    ]
                 }
             }
             {

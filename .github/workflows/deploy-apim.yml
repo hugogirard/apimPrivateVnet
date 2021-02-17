@@ -1,18 +1,18 @@
 name: Deploy APIM Infra
 
 on:  
-#  push:
-#    branches:
-#      - main
+ #push:
+#   branches:
+#     - 'fix/fixpipeline'
 #    paths:
 #      - 'bicep/*.bicep'      
 #      - '.github/workflows/deploy-apim.yml'
 
-  workflow_dispatch:
+#  workflow_dispatch:
     
 env:
-  APIM_RESOURCE_GROUP_NAME: api-demo-rg
-  ON_PREM_RESOURCE_GROUP_NAME: onprem-demo-rg
+  APIM_RESOURCE_GROUP_NAME: api-demo-fix-rg
+  ON_PREM_RESOURCE_GROUP_NAME: onprem-demo-fix-rg
   LOCATION: eastus
 
 jobs:
@@ -24,6 +24,7 @@ jobs:
       apimSubnetCIDR: ${{ steps.deployapim.outputs.apimSubnetCIDR }}
       appGwIdentity: ${{ steps.deployapim.outputs.identityId }}
       gwSubnetId: ${{ steps.deployapim.outputs.gwSubnetId }}
+      vpnId: ${{ steps.deployapim.outputs.vpnCloudId }}
 
     steps:
       - uses: actions/checkout@v2
@@ -104,6 +105,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy_apim_resources
 
+    outputs:
+      vpnId: ${{ steps.deployonprem.outputs.vpnCloudId }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -138,7 +142,7 @@ jobs:
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}          
 
       - name: Deploy On Premise Resources
-        id: deployapim
+        id: deployonprem
         uses: Azure/arm-deploy@v1.0.1
         with:        
           scope: resourcegroup          
@@ -147,4 +151,4 @@ jobs:
           resourceGroupName: ${{ env.ON_PREM_RESOURCE_GROUP_NAME }}        
           template: bicep/onpremise.json   
           parameters: onpremise.parameters.json
-          deploymentMode: Incremental
+          deploymentMode: Incremental     

@@ -83,6 +83,7 @@ Here the list of all Github secrets that need to create before running the Githu
 | SUBSCRIPTION_ID      | The subscription ID where to deploy the Az Resources  |
 | SP_PRINCIPAL_OBJECT_ID | The object ID related to the SP that run the github action |
 | SUBSCRIPTION_ID      | The subscription ID where you run the github action |
+| SHARED_KEY           | The shared key needed for the VPN connection https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-vnet-vnet-resource-manager-portal
 
 ## Step 2 - Run Github Action Deploy APIM Infra
 

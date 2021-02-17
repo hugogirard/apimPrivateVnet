@@ -41,3 +41,5 @@ module vpn './modules/gateway/vpn.bicep' = {
       publicIpName: 'pip-gw-prem'
   }
 }
+
+output vpnOnPremId string = vpn.outputs.vpnId

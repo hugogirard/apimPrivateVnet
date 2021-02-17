@@ -1,4 +1,4 @@
-
+param subnetId string
 
 var suffix = uniqueString(resourceGroup().id)
 var appServiceApiName = concat('appsrvapi',suffix)
@@ -57,6 +57,13 @@ resource wcf 'Microsoft.Web/sites@2019-08-01' = {
   properties: {
     serverFarmId: appserviceWeb.id
   }  
+}
+
+resource todoApiNetworkConfig 'Microsoft.Web/sites/networkConfig@2020-06-01' = {
+  name: '${api.name}/VirtualNetwork'
+  properties: {
+    subnetResourceId: subnetId
+  }
 }
 
 output todoWebUrl string = 'https://${web.properties.hostNames[0]}'

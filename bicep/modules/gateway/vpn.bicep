@@ -46,3 +46,5 @@ resource vpn 'Microsoft.Network/virtualNetworkGateways@2019-04-01' = {
     }
   }
 }
+
+output vpnId string = vpn.id
