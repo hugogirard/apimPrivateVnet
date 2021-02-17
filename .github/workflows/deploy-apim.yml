@@ -1,9 +1,9 @@
 name: Deploy APIM Infra
 
 on:  
- push:
-   branches:
-     - 'fix/fixpipeline'
+ #push:
+#   branches:
+#     - 'fix/fixpipeline'
 #    paths:
 #      - 'bicep/*.bicep'      
 #      - '.github/workflows/deploy-apim.yml'
