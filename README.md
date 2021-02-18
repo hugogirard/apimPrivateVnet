@@ -3,15 +3,19 @@
   - [Create Azure DNS Public Zone](#create-azure-dns-public-zone)
   - [Create Wildcard Certificate](#run-this-step-only-if-you-dont-have-a-ssl-certificate)
 - [Creating Azure Resources](#creating-azure-resources)
-  - [Step 1 - Create Github Secrets](#step-1-create-github-secrets)
-  - [Step 2 - Run Github Action Deploy APIM Infra](#step-2-run-github-action-deploy-apim-infra)
-  - [Step 3 - Upload your certificate in Azure Key Vault](#step-3-upload-your-certificate-in-azure-key-vault)
-  - [Step 4 - Configure the Gateway of APIM](#step-4-configure-the-gateway-of-apim)
-  - [Step 5 - Run the next Github Action](#step-5-run-the-next-github-action)
-  - [Step 6 - Configure in Azure Public DNS the IP of Application Gateway](#step-6-configure-in-azure-public-dns-the-ip-of-application-gateway)
+  - [Step 1 - Create Github Secrets](#create-github-secrets)
+  - [Step 2 - Run Github Action Deploy APIM Infra](#run-github-action-deploy-apim-infra)
+  - [Step 3 - Upload your certificate in Azure Key Vault](#upload-your-certificate-in-azure-key-vault)
+  - [Step 4 - Configure the Gateway of APIM](#configure-the-gateway-of-apim)
+  - [Step 5 - Run the next Github Action](#run-the-next-github-action)
+  - [Step 6 - Configure in Azure Public DNS the IP of Application Gateway](#configure-in-azure-public-dns-the-ip-of-application-gateway)
 - [Error during deploying KeyVault](#error-during-deploying-keyVault)
 - [Optional](#optional)
   - [Deploy webapp provided](#deploy-webapp-provided)
+  - [Configure appsettings for TodoApi](configure-appsettings-for-todoapi)
+  - [Configure appsettings for WeatherApi](configure-appsettings-for-weatherapi)
+  - [Configure appsettings for TodoWeb](configure-appsettings-for-todoWeb)
+
 
 
 # About this sample
@@ -83,7 +87,7 @@ If you browse in it inside the last child folder of **acme-v02.api.letsencrypt.o
 
 # Creating Azure Resources
 
-## Step 1 - Create Github Secrets
+## Create Github Secrets
 
 To create the architecture and all Azure resources you need to setup some Github Secrets before.
 
@@ -106,7 +110,7 @@ Here the list of all Github secrets that need to create before running the Githu
 | SUBSCRIPTION_ID      | The subscription ID where you run the github action |
 | SHARED_KEY           | The shared key needed for the VPN connection https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-vnet-vnet-resource-manager-portal
 
-## Step 2 - Run Github Action Deploy APIM Infra
+## Run Github Action Deploy APIM Infra
 
 Now go in the Actions Tab 
 
@@ -122,7 +126,7 @@ On the right menu click the **Run workflow** button and click the **Run workflow
 
 The Github action will take around 45 minutes to complete.  The Github action will create 3 new Github secrets needed to execute the next pipeline.
 
-## Step 3 - Upload your certificate in Azure Key Vault
+## Upload your certificate in Azure Key Vault
 
 Now upload you generated or existing certificate in Azure KeyVault.
 
@@ -142,7 +146,7 @@ Copy the value from that textbox you will need to create a Github secret.
 
 Now you need to create a new **Github secrets** with the value copied before.  The name of the secret is **CERT_LINK**.
 
-## Step 4 - Configure the Gateway of APIM
+## Configure the Gateway of APIM
 
 Next go to your API Management and custom domains
 
@@ -158,7 +162,7 @@ Go to your Azure Private DNS Zone and create a new A record entry
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/privatedns.png?raw=true' />
 
-## Step 5 - Run the next Github Action
+## Run the next Github Action
 
 Now you are ready to run the next **Github Action**, go back to Github Action and select **Deploy Application Gateway Infra** and run the worflow.
 
@@ -166,7 +170,7 @@ Once the Github Action is executed go to your Application Gateway and in the men
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/backendhealth.png?raw=true' />
 
-## Step 6 - Configure in Azure Public DNS the IP of Application Gateway
+## Configure in Azure Public DNS the IP of Application Gateway
 
 Get the public ip of the App GW and add a record in your **Azure Public DNS Zone**.
 
@@ -182,7 +186,7 @@ Now do a nslookup from your computer, this should use the public ip of the Appli
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionpublic.png?raw=true' />
 
-# Step 7 - Create the VNET to VNET Gateway Connection
+# Create the VNET to VNET Gateway Connection
 
 This sample create two resources group, each one with a VPN Gateway, you will need to create a connection between them to mock cloud to on premise environment.
 
@@ -213,9 +217,176 @@ Those steps are only required if you want to deploy the web application provided
 
 This Github contains 3 app used for the demo
 
---> Apps
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/apps.png?raw=true' />
 
 The TodoWeb is the front end MVC app, the TodoApi is the one hosted in the cloud and Weather API is the one hosted in the Virtual Machine.
 
-How to deploy those applications are out of this scope but the next section will show you want you need to register in your Azure Active Directory and which appsettings is needed in the Azure Portal.
+How to deploy those applications are out of this scope, but the next section will show you what you need to register in your Azure Active Directory to be able to run those sample apps.
+
+## Register in Azure Active Directory
+
+You will need to create 3 applications registration in Azure AD, the flow used here is this [one](https://docs.microsoft.com/en-us/azure/active-directory/develop/authentication-flows-app-scenarios#web-app-that-signs-in-a-user-and-calls-a-web-api-on-behalf-of-the-user).
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/azureadapp.png?raw=true' />
+
+What is really important is the scope you create in TodoApi and WeatherApi.
+
+For TodoApi you need to create one scope called **Todo.Api.All** and for WeatherApi the scope is **Weather.Get.All**.
+
+Once you have those the two APIs created with the proper scope just give permission to those scope to TodoWeb.
+
+Be sure next to create the Application Secret for the TodoWeb app.
+
+For more details about using Azure Active Directory with .Net Application refer to the officiel Microsoft [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/).
+
+**Important** 
+
+In the manifest file of all three application be sure to set the version of the property **accessTokenAcceptedVersion** to the value 2.
+
+## Configure appsettings for TodoApi
+
+Here the appsettings of TodoApi that you need to configure in the WebApp in the Azure Portal.
+
+```json
+
+[
+  {
+    "name": "AzureAd:ClientId",
+    "value": "<ClientID of the TodoApi in Azure AD>",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureAd:Instance",
+    "value": "https://login.microsoftonline.com/",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureAd:TenantId",
+    "value": "<Your AzureAD Tenant ID>",
+    "slotSetting": false
+  },
+  {
+    "name": "ConnectionStrings:Sql",
+    "value": "<Sql Connection string of the SQL Azure>",
+    "slotSetting": false
+  },
+  {
+    "name": "WEBSITE_NODE_DEFAULT_VERSION",
+    "value": "6.9.1",
+    "slotSetting": false
+  }
+]
+
+Now you can publish the TodoWeb to Azure using Visual Studio or Azure CLI.
+
+You can now configure the TodoApi in APIM with the policy you want to test.
+
+```
+## Configure appsettings for WeatherApp
+
+This application is different and hosted in the virtual machine called win1api.  You will need to connect to this virtual machine with RDP and first install IIS from the server role.
+
+Once is done you will need to install .Net Core 3.1 hosting bundle
+
+You can find the Microsoft .Net core [here](https://dotnet.microsoft.com/download)
+
+Now you can install your .Net Core application in ISS, once is done modify the appsettings.json with those parameters.
+
+```json
+{
+    "AzureAd": {
+        "Instance": "https://login.microsoftonline.com/",
+        "TenantId": "<TenantId of your Azure AD>",
+        "ClientId": "<ClientId of Weather App in Azure AD>"
+    }
+}
+
+```
+
+You can now configure the Weather in APIM with the policy you want to test.
+
+## Configure appsettings for TodoWeb
+
+Here the appsettings of TodoWeb that you need to configure in the WebApp in the Azure Portal.
+
+```json
+[
+  {
+    "name": "AzureAd:CallbackPath",
+    "value": "/signin-oidc",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureAd:ClientId",
+    "value": "<The ClientId of TodoWeb in AzureAD>",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureAd:ClientSecret",
+    "value": "<The ClientSecret of TodoWeb in AzureAD>",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureAd:Instance",
+    "value": "https://login.microsoftonline.com/",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureAd:SignedOutCallbackPath",
+    "value": "/signout-callback-oidc",
+    "slotSetting": false
+  },
+  {
+    "name": "AzureAd:TenantId",
+    "value": "<Your Azure AD TenantId>",
+    "slotSetting": false
+  },
+  {
+    "name": "TodoList:ApiAccessKey",
+    "value": "<Subscription Key of APIM to call TodoApi>",
+    "slotSetting": false
+  },
+  {
+    "name": "TodoList:TodoListAppId",
+    "value": "<ClientId of TodoApi>",
+    "slotSetting": false
+  },
+  {
+    "name": "TodoList:TodoListBaseAddress",
+    "value": "<BaseUrl Of TodoApi from APIM>",
+    "slotSetting": false
+  },
+  {
+    "name": "TodoList:TodoListScope",
+    "value": "api://<ClientId of TodoApi>/Todo.Api.All",
+    "slotSetting": false
+  },
+  {
+    "name": "WeatherApp:ApiAccessKey",
+    "value": "<Subscription Key of APIM to call Weather Api>",
+    "slotSetting": false
+  },
+  {
+    "name": "WeatherApp:WeatherAppId",
+    "value": "<ClientId of WeatherApi>",
+    "slotSetting": false
+  },
+  {
+    "name": "WeatherApp:WeatherBaseAddress",
+    "value": "<BaseUrl of WeatherApi From APIM>",
+    "slotSetting": false
+  },
+  {
+    "name": "WeatherApp:WeathertScope",
+    "value": "api://<ClientId of WeatherApi>/Weather.Get.All",
+    "slotSetting": false
+  },
+  {
+    "name": "WEBSITE_NODE_DEFAULT_VERSION",
+    "value": "6.9.1",
+    "slotSetting": false
+  }
+]
+```
+Now you can publish the TodoWeb to Azure using Visual Studio or Azure CLI.
 
