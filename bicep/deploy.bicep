@@ -15,21 +15,19 @@ param onpremWebAddressSpace string
 
 param publisherName string
 param publisherEmail string
-param adminUsernameSql string {
-    secure: true
-}
-param adminPasswordSql string {
-    secure: true
-}
+@secure()
+param adminUsernameSql string
+
+@secure()
+param adminPasswordSql string
 
 param hostname string
 
-param adminUsername string {
-  secure: true
-}
-param adminPassword string {
-  secure: true
-}
+@secure()
+param adminUsername string
+
+@secure()
+param adminPassword string
 
 module network './modules/vnet/networking.bicep' = {
     name: 'network'
@@ -83,6 +81,16 @@ module apim './modules/apim/apim.bicep' = {
         publisherName: publisherName
         publisherEmail: publisherEmail
         subnetResourceId: network.outputs.subnetApim
+    }
+}
+
+module apis './modules/apim/apis.bicep' = {
+    name: 'apis'
+    dependsOn: [
+        apim
+    ]
+    params: {
+        apimName: apim.name
     }
 }
 
