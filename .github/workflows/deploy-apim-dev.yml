@@ -101,6 +101,8 @@ jobs:
 
   deploy_onpremise_resources:
     runs-on: ubuntu-latest
+    environment:
+      name: dev    
     needs: deploy_apim_resources
 
     outputs:
