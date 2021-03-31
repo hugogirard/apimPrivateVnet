@@ -29,6 +29,9 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
                     secrets: [
                         'all'                      
                     ]
+                    certificates: [
+                        'all'
+                    ]
                 }
             }
             {
