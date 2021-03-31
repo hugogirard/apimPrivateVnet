@@ -4,7 +4,7 @@ var apiName = 'test-api'
 var operationName = 'getmsg'
 
 resource testAPi 'Microsoft.ApiManagement/service/apis@2020-12-01' = {
-  name: '${apimName}/${apimName}'
+  name: '${apimName}/${apiName}'
   properties: {
     displayName: 'Test API'
     subscriptionRequired: false
@@ -13,12 +13,11 @@ resource testAPi 'Microsoft.ApiManagement/service/apis@2020-12-01' = {
     protocols: [
       'https'
     ]
-    isCurrent: true
   }
 }
 
 resource testApiOperation 'Microsoft.ApiManagement/service/apis/operations@2020-12-01' = {
-  name: '${apimName}/${apiName}/${operationName}'
+  name: '${testAPi.name}/${operationName}'
   dependsOn: [
     testAPi
   ]
@@ -35,7 +34,7 @@ resource testApiOperation 'Microsoft.ApiManagement/service/apis/operations@2020-
         representations: [
           {
             contentType: 'application/json'
-            sample: '{\r\n "message": "itworks"\r\n}'
+            sample: '{\r\n "message": "Hello World from East US"\r\n}'
           }          
         ]
         headers: [
@@ -47,7 +46,7 @@ resource testApiOperation 'Microsoft.ApiManagement/service/apis/operations@2020-
 }
 
 resource operationPolicy 'Microsoft.ApiManagement/service/apis/operations/policies@2020-12-01' = {
-  name: '${apimName}/${apiName}/${operationName}/policy'
+  name: '${apimName}/${testAPi.name}/policy'
   dependsOn: [
     testApiOperation
   ]

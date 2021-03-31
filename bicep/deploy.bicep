@@ -84,15 +84,15 @@ module apim './modules/apim/apim.bicep' = {
     }
 }
 
-// module apis './modules/apim/apis.bicep' = {
-//     name: 'apis'
-//     dependsOn: [
-//         apim
-//     ]
-//     params: {
-//         apimName: apim.name
-//     }
-// }
+module apis './modules/apim/apis.bicep' = {
+    name: 'apis'
+    dependsOn: [
+        apim
+    ]
+    params: {
+        apimName: apim.name
+    }
+}
 
 module dns './modules/dns/dns.bicep' = {
     name: 'dns'
