@@ -1,10 +1,22 @@
 name: Deploy APIM Infra
 
 on:  
-  push:
-    branches:
-      - 'dev'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Which environment you want to deploy (dev or prod)'
+        required: true
+        default: 'dev'
+      branch:
+        description: 'Which branch you want to use (dev or prod)'
+        required: true
+        default: 'dev'
+
+# on:  
+#   push:
+#     branches:
+#       - 'dev'
+#   workflow_dispatch:
     
 env:
   APIM_RESOURCE_GROUP_NAME: ${{ secrets.APIM_RESOURCE_GROUP_NAME }}
@@ -57,7 +69,7 @@ jobs:
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}
           principalAdminObjectId: ${{ secrets.ADMIN_VAULT_OBJECT_ID }}
           spIdentity: ${{ secrets.SP_PRINCIPAL_OBJECT_ID }}
-          environment: 'dev'
+          environment: '${{ secrets.ENVIRONMENT }}'
 
       # Create resource group
       - name: Create Resource Group

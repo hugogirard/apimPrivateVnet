@@ -1,6 +1,7 @@
 param gwSubnetId string
 param certLink string
 param apiGwHostname string
+param devPortalFqdn string
 param identityId string
 
 var suffix = uniqueString(resourceGroup().id)
@@ -87,13 +88,23 @@ resource appgw 'Microsoft.Network/ApplicationGateways@2020-06-01' = {
                     ]
                 }
             }
+            {
+                name: 'devPortalPool'
+                properties: {
+                    backendAddresses: [
+                        {
+                            fqdn: devPortalFqdn
+                        }
+                    ]
+                }
+            }
         ]
         backendHttpSettingsCollection: [
             {
-                name: 'apiGW'
+                name: 'apiGWHttps'
                 properties: {
-                    port: 80
-                    protocol: 'Http'
+                    port: 443
+                    protocol: 'Https'
                     cookieBasedAffinity: 'Disabled'
                     pickHostNameFromBackendAddress: false
                     requestTimeout: 20
