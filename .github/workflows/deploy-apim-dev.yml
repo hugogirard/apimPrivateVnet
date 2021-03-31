@@ -1,22 +1,22 @@
 name: Deploy APIM Infra
 
-on:  
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Which environment you want to deploy (dev or prod)'
-        required: true
-        default: 'dev'
-      branch:
-        description: 'Which branch you want to use (dev or prod)'
-        required: true
-        default: 'dev'
-
 # on:  
-#   push:
-#     branches:
-#       - 'dev'
 #   workflow_dispatch:
+#     inputs:
+#       environment:
+#         description: 'Which environment you want to deploy (dev or prod)'
+#         required: true
+#         default: 'dev'
+#       branch:
+#         description: 'Which branch you want to use (dev or prod)'
+#         required: true
+#         default: 'dev'
+
+on:  
+  push:
+    branches:
+      - 'dev'
+  workflow_dispatch:
     
 env:
   APIM_RESOURCE_GROUP_NAME: ${{ secrets.APIM_RESOURCE_GROUP_NAME }}
