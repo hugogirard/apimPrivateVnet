@@ -1,15 +1,16 @@
-param adminUsername string {
-  secure: true
-}
-param adminPassword string {
-  secure: true
-}
+@secure()
+param adminUsername string
+
+@secure()  
+param adminPassword string
+
 param vnetName string
 param subnetId string
+param environment string
 
 var suffix = uniqueString(resourceGroup().id)
-var name = concat('sqlserver-',suffix)
-var dbname = 'tododb'
+var name = concat('sqlserver-',environment,'-',suffix)
+var dbname = 'tododb-${environment}'
 var location = resourceGroup().location
 
 resource server 'Microsoft.Sql/servers@2019-06-01-preview' = {

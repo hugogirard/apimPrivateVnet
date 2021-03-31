@@ -8,7 +8,7 @@ on:
     
 env:
   APIM_RESOURCE_GROUP_NAME: ${{ secrets.APIM_RESOURCE_GROUP_NAME }}
-  ON_PREM_RESOURCE_GROUP_NAME: ${{ secrets.ON_PREM_RESOURCE_GROUP_NAME }}
+  ON_PREM_RESOURCE_GROUP_NAME: ${{ secrets.ON_PREM_RESOURCE_GROUP_NAME }}  
   LOCATION: eastus
 
 jobs:
@@ -57,6 +57,7 @@ jobs:
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}
           principalAdminObjectId: ${{ secrets.ADMIN_VAULT_OBJECT_ID }}
           spIdentity: ${{ secrets.SP_PRINCIPAL_OBJECT_ID }}
+          environment: 'dev'
 
       # Create resource group
       - name: Create Resource Group
