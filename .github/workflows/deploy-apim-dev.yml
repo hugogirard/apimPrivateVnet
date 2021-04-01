@@ -13,9 +13,6 @@ name: Deploy APIM Infra
 #         default: 'dev'
 
 on:  
-  push:
-    branches:
-      - 'dev'
   workflow_dispatch:
     
 env:

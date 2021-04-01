@@ -187,7 +187,7 @@ resource appgw 'Microsoft.Network/ApplicationGateways@2020-06-01' = {
                         id: resourceId('Microsoft.Network/applicationGateways/httpListeners',appgwName,'portalListener')
                     }
                     backendAddressPool: {
-                        id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools',appgwName,'devPortal')
+                        id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools',appgwName,'devPortalPool')
                     }
                     backendHttpSettings: {
                         id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection',appgwName,'devPortalHttpsSettings')
