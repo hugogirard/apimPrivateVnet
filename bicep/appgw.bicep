@@ -140,7 +140,7 @@ resource appgw 'Microsoft.Network/ApplicationGateways@2020-06-01' = {
                     sslCertificate: {
                         id: resourceId('Microsoft.Network/applicationGateways/sslCertificates',appgwName,'httpListener')
                     }
-                    hostName: devPortalFqdn
+                    hostName: apiGwHostname
                     protocol: 'Https'
                     requireServerNameIndication: true
                 }
