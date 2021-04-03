@@ -13,7 +13,9 @@ env:
 jobs:
   deploy_appgw_resources:
     runs-on: ubuntu-latest 
-    
+    environment:
+      name: dev
+      
     steps:
       - uses: actions/checkout@v2
 
