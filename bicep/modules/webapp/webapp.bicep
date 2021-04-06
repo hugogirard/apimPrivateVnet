@@ -1,12 +1,13 @@
 param subnetId string
+param environment string
 
 var suffix = uniqueString(resourceGroup().id)
-var appServiceApiName = concat('appsrvapi',suffix)
-var appServiceWebName = concat('appsrvweb',suffix)
+var appServiceApiName = concat('appsrvapi',environment,'-',suffix)
+var appServiceWebName = concat('appsrvweb',environment,'-',suffix)
 var location = resourceGroup().location
-var webapiName = concat('todoapi-',suffix)
-var webAppWeb = concat('todoweb-',suffix)
-var wcfApp = concat('wcfapp-',suffix)
+var webapiName = concat('todoapi-',environment,'-',suffix)
+var webAppWeb = concat('todoweb-',environment,'-',suffix)
+var wcfApp = concat('wcfapp-',environment,'-',suffix)
 
 resource appserviceAPi 'Microsoft.Web/serverfarms@2019-08-01' = {
   name: appServiceApiName

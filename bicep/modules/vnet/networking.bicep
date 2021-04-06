@@ -5,6 +5,7 @@ param apimSubnet string
 param jumpboxSubnet string
 param webServerSubnet string
 param gwSubnet string
+param environment string
 
 var location = resourceGroup().location
 var appgwSubnetName = 'appgwSubnet'
@@ -14,7 +15,7 @@ var webServerSubnetName = 'webWorkloadSubnet'
 var gwSubnetName = 'gatewaySubnet'
 
 resource nsg 'Microsoft.Network/networkSecurityGroups@2020-05-01' = {
-    name: 'nsg-jumpbox'
+    name: 'nsg-${environment}-jumpbox'
     location: location
     properties: {
         securityRules: []

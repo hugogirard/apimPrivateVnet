@@ -16,6 +16,7 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
     location: resourceGroup().location
     properties: {
         tenantId: subscription().tenantId
+        enableSoftDelete: false
         sku: {
             family: 'A'
             name: 'standard'
@@ -27,6 +28,9 @@ resource vault 'Microsoft.KeyVault/vaults@2019-09-01' = {
                 permissions: {
                     secrets: [
                         'all'                      
+                    ]
+                    certificates: [
+                        'all'
                     ]
                 }
             }

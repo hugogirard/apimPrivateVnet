@@ -1,10 +1,8 @@
 param subnetId string
-param adminUsername string {
-  secure: true
-}
-param adminPassword string {
-  secure: true
-}
+@secure()
+param adminUsername string
+@secure()
+param adminPassword string
 
 var location = resourceGroup().location
 
@@ -57,20 +55,22 @@ resource jumpbox 'Microsoft.Compute/virtualMachines@2020-06-01' = {
         osProfile: {
             computerName: 'jumpbox'
             adminUsername: adminUsername
-            adminPassword: adminPassword
-            linuxConfiguration: {
-                disablePasswordAuthentication: false
-            }            
+            adminPassword: adminPassword   
         }
         storageProfile: {
             imageReference: {
-                publisher: 'Canonical'
-                offer: 'UbuntuServer'
-                sku: '18.04-LTS'
+                publisher: 'MicrosoftWindowsServer'
+                offer: 'WindowsServer'
+                sku: '2019-Datacenter'
                 version: 'latest'
             }
             osDisk: {
+                name: concat('jumpbox','_OSDisk')
+                caching: 'ReadWrite'
                 createOption: 'FromImage'
+                managedDisk: {
+                  storageAccountType: 'Premium_LRS'
+                }
             }
         }
         networkProfile: {

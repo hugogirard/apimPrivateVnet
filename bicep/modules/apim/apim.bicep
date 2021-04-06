@@ -1,9 +1,10 @@
 param publisherName string
 param publisherEmail string
 param subnetResourceId string
+param environment string
 
 var suffix = uniqueString(resourceGroup().id)
-var apimName = concat('apimdemo-',suffix)
+var apimName = concat('apimdemo-',environment,'-',suffix)
 var location = resourceGroup().location
 
 resource apim 'Microsoft.ApiManagement/service@2019-12-01' = {

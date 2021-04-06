@@ -5,6 +5,7 @@ param apimSubnet string
 param jumpboxSubnet string
 param webServerSubnet string
 param gwSubnet string
+param environment string
 
 param principalAdminObjectId string
 param spIdentity string
@@ -15,21 +16,19 @@ param onpremWebAddressSpace string
 
 param publisherName string
 param publisherEmail string
-param adminUsernameSql string {
-    secure: true
-}
-param adminPasswordSql string {
-    secure: true
-}
+@secure()
+param adminUsernameSql string
+
+@secure()
+param adminPasswordSql string
 
 param hostname string
 
-param adminUsername string {
-  secure: true
-}
-param adminPassword string {
-  secure: true
-}
+@secure()
+param adminUsername string
+
+@secure()
+param adminPassword string
 
 module network './modules/vnet/networking.bicep' = {
     name: 'network'
@@ -41,14 +40,15 @@ module network './modules/vnet/networking.bicep' = {
         jumpboxSubnet: jumpboxSubnet
         webServerSubnet: webServerSubnet
         gwSubnet: gwSubnet
+        environment: environment
     }
 }
 
 module vpn './modules/gateway/vpn.bicep' = {
     name: 'vpn'
-    params: {
+    params: {        
         location: resourceGroup().location
-        name: concat('vpn-cloud-',uniqueString(resourceGroup().id))
+        name: concat('vpn-cloud-',environment,uniqueString(resourceGroup().id))
         subnetId: network.outputs.subnetGw
         publicIpName: 'pip-gw-cloud'
     }
@@ -61,6 +61,7 @@ module web './modules/webapp/webapp.bicep' = {
     ]
     params: {
         subnetId: network.outputs.webServerSubnetId
+        environment: environment
     }    
 }
 
@@ -71,6 +72,7 @@ module sql './modules/sql/sql.bicep' = {
         adminPassword: adminPasswordSql
         subnetId: network.outputs.webServerSubnetId
         vnetName: network.outputs.vnetname
+        environment: environment
     }
 }
 
@@ -83,8 +85,19 @@ module apim './modules/apim/apim.bicep' = {
         publisherName: publisherName
         publisherEmail: publisherEmail
         subnetResourceId: network.outputs.subnetApim
+        environment: environment
     }
 }
+
+// module apis './modules/apim/apis.bicep' = {
+//     name: 'apis'
+//     dependsOn: [
+//         apim
+//     ]
+//     params: {
+//         apimName: apim.name
+//     }
+// }
 
 module dns './modules/dns/dns.bicep' = {
     name: 'dns'

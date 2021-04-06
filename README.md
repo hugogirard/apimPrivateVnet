@@ -162,6 +162,20 @@ Go to your Azure Private DNS Zone and create a new A record entry
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/privatedns.png?raw=true' />
 
+## Configure the developer portal
+
+Repeat the same step than before but this time is for the developer portal.  Be sure to add the record in the Azure Private DNS Zone using the same private IP.  
+
+Do the same for the Management, at the end you should see something like this in your Domains for Azure API Management.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/finalcustomdomain.png?raw=true' />
+
+
+This will be what your Azure Private DNS Zone will look like at the end.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/finaldns.png?raw=true' />
+
+
 ## Run the next Github Action
 
 Now you are ready to run the next **Github Action**, go back to Github Action and select **Deploy Application Gateway Infra** and run the worflow.

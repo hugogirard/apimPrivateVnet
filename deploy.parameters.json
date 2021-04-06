@@ -58,6 +58,9 @@
         },
         "spIdentity": {
             "value": "__spIdentity__"
+        },
+        "environment": {
+            "value": "__environment__"
         }
 
     }

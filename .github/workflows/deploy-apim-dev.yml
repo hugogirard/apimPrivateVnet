@@ -1,0 +1,164 @@
+name: Deploy APIM Infra
+
+# on:  
+#   workflow_dispatch:
+#     inputs:
+#       environment:
+#         description: 'Which environment you want to deploy (dev or prod)'
+#         required: true
+#         default: 'dev'
+#       branch:
+#         description: 'Which branch you want to use (dev or prod)'
+#         required: true
+#         default: 'dev'
+
+on:  
+  workflow_dispatch:
+    
+env:
+  APIM_RESOURCE_GROUP_NAME: ${{ secrets.APIM_RESOURCE_GROUP_NAME }}
+  ON_PREM_RESOURCE_GROUP_NAME: ${{ secrets.ON_PREM_RESOURCE_GROUP_NAME }}  
+  LOCATION: eastus
+
+jobs:
+  deploy_apim_resources:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    
+    # Map outputs of the job
+    outputs:
+      apimSubnetCIDR: ${{ steps.deployapim.outputs.apimSubnetCIDR }}
+      appGwIdentity: ${{ steps.deployapim.outputs.identityId }}
+      gwSubnetId: ${{ steps.deployapim.outputs.gwSubnetId }}
+      vpnId: ${{ steps.deployapim.outputs.vpnCloudId }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Login to Azure
+      - name: Azure Login
+        uses: Azure/login@v1.1
+        with:          
+          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
+          enable-AzPSSession: false
+      
+      # Compile bicep files
+      - name: Bicep Build
+        uses: aliencube/bicep-build-actions@v0.1
+        with:
+          files: bicep/deploy.bicep
+                
+      # Replace parameters with secrets
+      - name: Replace tokens
+        uses: cschleiden/replace-tokens@v1.0
+        with:        
+          tokenPrefix: __        
+          tokenSuffix: __        
+          files: '["deploy.parameters.json"]'
+        env:
+          publisherName: ${{ secrets.PUBLISHER_NAME }}
+          publisherEmail: ${{ secrets.PUBLISHER_EMAIL }}
+          adminUsernameSql: ${{ secrets.ADMIN_USERNAME_SQL }}
+          adminPasswordSql: ${{ secrets.ADMIN_PASSWORD_SQL }}
+          hostname: ${{ secrets.HOSTNAME }}
+          adminUsername: ${{ secrets.ADMIN_USERNAME }}
+          adminPassword: ${{ secrets.ADMIN_PASSWORD }}
+          principalAdminObjectId: ${{ secrets.ADMIN_VAULT_OBJECT_ID }}
+          spIdentity: ${{ secrets.SP_PRINCIPAL_OBJECT_ID }}
+          environment: '${{ secrets.ENVIRONMENT }}'
+
+      # Create resource group
+      - name: Create Resource Group
+        run: |
+         az group create -n ${{ env.APIM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}  
+
+      - name: Deploy APIM Resources
+        id: deployapim
+        uses: Azure/arm-deploy@v1.0.1
+        with:        
+          scope: resourcegroup          
+          subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
+          region: ${{ env.LOCATION }}        
+          resourceGroupName: ${{ env.APIM_RESOURCE_GROUP_NAME }}        
+          template: bicep/deploy.json   
+          parameters: deploy.parameters.json
+          deploymentMode: Incremental     
+
+      - uses: gliech/create-github-secret-action@v1
+        with:
+          name: GW_SUBNET_ID
+          value: ${{ steps.deployapim.outputs.gwSubnetId }}
+          pa_token: ${{ secrets.PA_TOKEN }}
+
+      - uses: gliech/create-github-secret-action@v1
+        with:
+          name: API_GW_HOSTNAME
+          value: ${{ steps.deployapim.outputs.apiHostname }}
+          pa_token: ${{ secrets.PA_TOKEN }}          
+
+      - uses: gliech/create-github-secret-action@v1
+        with:
+          name: API_GW_IDENTITYID
+          value: ${{ steps.deployapim.outputs.identityId }}
+          pa_token: ${{ secrets.PA_TOKEN }}        
+
+      - uses: gliech/create-github-secret-action@v1
+        with:
+          name: API_GW_IDENTITYID
+          value: ${{ steps.deployapim.outputs.identityId }}
+          pa_token: ${{ secrets.PA_TOKEN }}                        
+
+  deploy_onpremise_resources:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev    
+    needs: deploy_apim_resources
+
+    outputs:
+      vpnId: ${{ steps.deployonprem.outputs.vpnCloudId }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Login to Azure
+      - name: Azure Login
+        uses: Azure/login@v1.1
+        with:          
+          creds: ${{ secrets.SP_AZURE_CREDENTIALS }}          
+          enable-AzPSSession: false
+
+      # Compile bicep files
+      - name: Bicep Build
+        uses: aliencube/bicep-build-actions@v0.1
+        with:
+          files: bicep/onpremise.bicep
+
+      # Create resource group
+      - name: Create Resource Group
+        run: |
+         az group create -n ${{ env.ON_PREM_RESOURCE_GROUP_NAME }} -l ${{ env.LOCATION }}  
+
+      # Replace parameters
+      - name: Replace tokens
+        uses: cschleiden/replace-tokens@v1.0
+        with:        
+          tokenPrefix: __        
+          tokenSuffix: __        
+          files: '["onpremise.parameters.json"]'
+        env:
+          apimSubnetCIDR: ${{ needs.deploy_apim_resources.outputs.apimSubnetCIDR }}
+          adminUsername: ${{ secrets.ADMIN_USERNAME }}
+          adminPassword: ${{ secrets.ADMIN_PASSWORD }}          
+
+      - name: Deploy On Premise Resources
+        id: deployonprem
+        uses: Azure/arm-deploy@v1.0.1
+        with:        
+          scope: resourcegroup          
+          subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
+          region: ${{ env.LOCATION }}        
+          resourceGroupName: ${{ env.ON_PREM_RESOURCE_GROUP_NAME }}        
+          template: bicep/onpremise.json   
+          parameters: onpremise.parameters.json
+          deploymentMode: Incremental     
