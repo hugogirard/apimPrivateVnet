@@ -7,8 +7,10 @@
   - [Step 2 - Run Github Action Deploy APIM Infra](#run-github-action-deploy-apim-infra)
   - [Step 3 - Upload your certificate in Azure Key Vault](#upload-your-certificate-in-azure-key-vault)
   - [Step 4 - Configure the Gateway of APIM](#configure-the-gateway-of-apim)
-  - [Step 5 - Run the next Github Action](#run-the-next-github-action)
-  - [Step 6 - Configure in Azure Public DNS the IP of Application Gateway](#configure-in-azure-public-dns-the-ip-of-application-gateway)
+  - [Step 5 - Configure the developer portal](#configure-the-developer-portal)
+  - [Step 6 - Publish Developer Portal](#publish-developer-portal)
+  - [Step 7 - Run the next Github Action](#run-the-next-github-action)
+  - [Step 8 - Configure in Azure Public DNS the IP of Application Gateway](#configure-in-azure-public-dns-the-ip-of-application-gateway)
 - [Error during deploying KeyVault](#error-during-deploying-keyVault)
 - [Optional](#optional)
   - [Deploy webapp provided](#deploy-webapp-provided)
@@ -175,6 +177,19 @@ This will be what your Azure Private DNS Zone will look like at the end.
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/finaldns.png?raw=true' />
 
+## Publish Developer Portal
+
+Login in to your jumpbox, from there go to the [Azure Portal](https://portal.azure.com)
+
+Go to your APIM, and press the Developer Portal button.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/devbutton.png?raw=true' />
+
+From there, you will enter a designer, if an error occurs refresh the page.
+
+In the designer you need to publish your website using the publish button.
+
+<img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/publishportal.png?raw=true' />
 
 ## Run the next Github Action
 
@@ -199,6 +214,12 @@ Normally this should use the private IP
 Now do a nslookup from your computer, this should use the public ip of the Application Gateway (it can take up to 24 hours to work depending of your DNS server).
 
 <img src='https://github.com/hugogirard/apimPrivateVnet/blob/main/images/resolutionpublic.png?raw=true' />
+
+### Configure the Developer portal in the Azure Public DNS
+
+Using again the public IP of the Application Gateway, you will do the same than the previous step but for the DNS name of the developer portal this time.
+
+Now everything is setup.
 
 # Create the VNET to VNET Gateway Connection
 
