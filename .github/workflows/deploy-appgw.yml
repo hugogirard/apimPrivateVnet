@@ -43,5 +43,5 @@ jobs:
           region: ${{ env.LOCATION }}        
           resourceGroupName: ${{ env.APIM_RESOURCE_GROUP_NAME }}        
           template: bicep/appgw.json   
-          parameters: gwSubnetId=${{ secrets.GW_SUBNET_ID }} certLink=${{ secrets.CERT_LINK }} apiGwHostname=${{ secrets.API_GW_HOSTNAME }} identityId=${{ secrets.API_GW_IDENTITYID }}
+          parameters: gwSubnetId=${{ secrets.GW_SUBNET_ID }} certLink=${{ secrets.CERT_LINK }} apiGwHostname=${{ secrets.API_GW_HOSTNAME }} identityId=${{ secrets.API_GW_IDENTITYID }} devPortalFqdn=${{ secrets.DEV_PORTAL_GW_HOSTNAME }}
           deploymentMode: Incremental          
