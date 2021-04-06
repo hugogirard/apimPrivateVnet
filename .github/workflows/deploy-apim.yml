@@ -59,6 +59,7 @@ jobs:
           adminPassword: ${{ secrets.ADMIN_PASSWORD }}
           principalAdminObjectId: ${{ secrets.ADMIN_VAULT_OBJECT_ID }}
           spIdentity: ${{ secrets.SP_PRINCIPAL_OBJECT_ID }}
+          environment: 'prod'
 
       # Create resource group
       - name: Create Resource Group
