@@ -1,4 +1,4 @@
-name: Deploy APIM Infra
+name: Deploy APIM Infra - DEV
 
 # on:  
 #   workflow_dispatch:
