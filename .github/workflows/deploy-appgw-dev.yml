@@ -1,4 +1,4 @@
-name: Deploy Application Gateway Infra
+name: Deploy Application Gateway Infra - Dev
 
 on:  
   push:
