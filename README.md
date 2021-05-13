@@ -108,6 +108,7 @@ Here the list of all Github secrets that need to create before running the Githu
 | ADMIN_USERNAME       | The admin username of the Jumpbox and on prem VM      |
 | ADMIN_PASSWORD       | The password of the Jumpbox and on prem VM            |
 | DEV_PORTAL_GW_HOSTNAME | The DNS name of the Developer Portal                |
+| MANAGEMENT_GW_HOSTNAME | The hostname of the management plane                |
 | SUBSCRIPTION_ID      | The subscription ID where to deploy the Az Resources  |
 | SP_PRINCIPAL_OBJECT_ID | The object ID related to the SP that run the github action |
 | SUBSCRIPTION_ID      | The subscription ID where you run the github action |
