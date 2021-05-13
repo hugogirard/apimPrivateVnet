@@ -223,15 +223,16 @@ Using again the public IP of the Application Gateway, you will do the same than 
 
 Now everything is setup.
 
+### Configure the Manegement plane in the Azure Public DNS
+
+Using again the public IP of the Application Gateway, you will do the same than the previous step but for the DNS name of the management plane this time.
+
 # Create the VNET to VNET Gateway Connection
 
 This sample create two resources group, each one with a VPN Gateway, you will need to create a connection between them to mock cloud to on premise environment.
 
 For more details how to do this click [here](https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-vnet-vnet-resource-manager-portal)
 
-# URL Scheme
-
-Because end-to-end encryption is not done and the SSL stop at AppGW Level, when configure your API be sure to set the URL Scheme to both.
 
 # Error during deploying KeyVault
 
