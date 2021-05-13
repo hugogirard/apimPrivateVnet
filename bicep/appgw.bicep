@@ -2,6 +2,7 @@ param gwSubnetId string
 param certLink string
 param apiGwHostname string
 param devPortalFqdn string
+param managementFqdn string
 param identityId string
 
 var suffix = uniqueString(resourceGroup().id)
@@ -98,6 +99,16 @@ resource appgw 'Microsoft.Network/ApplicationGateways@2020-06-01' = {
                     ]
                 }
             }
+            {
+                name: 'managementPool'
+                properties: {
+                    backendAddresses: [
+                        {
+                            fqdn: managementFqdn
+                        }
+                    ]
+                }
+            }            
         ]
         backendHttpSettingsCollection: [
             {
@@ -125,7 +136,20 @@ resource appgw 'Microsoft.Network/ApplicationGateways@2020-06-01' = {
                         id: resourceId('Microsoft.Network/applicationGateways/probes',appgwName,'devPortalProbe')
                     }
                 }
-            }            
+            }
+            {
+                name: 'managementHttpsSettings'
+                properties: {
+                    port: 443
+                    protocol: 'Https'
+                    cookieBasedAffinity: 'Disabled'
+                    pickHostNameFromBackendAddress: false
+                    requestTimeout: 20
+                    probe: {
+                        id: resourceId('Microsoft.Network/applicationGateways/probes',appgwName,'managementProbe')
+                    }
+                }
+            }                         
         ]
         httpListeners: [
             {
@@ -161,7 +185,24 @@ resource appgw 'Microsoft.Network/ApplicationGateways@2020-06-01' = {
                     protocol: 'Https'
                     requireServerNameIndication: true
                 }
-            }            
+            }     
+            {
+                name: 'managementListener'
+                properties: {
+                    frontendIPConfiguration: {
+                        id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appgwName, 'appGwPublicFrontendIp')
+                    }
+                    frontendPort: {
+                        id: resourceId('Microsoft.Network/applicationGateways/frontendPorts',appgwName,'port_443')
+                    }
+                    sslCertificate: {
+                        id: resourceId('Microsoft.Network/applicationGateways/sslCertificates',appgwName,'httpListener')
+                    }
+                    hostName: managementFqdn
+                    protocol: 'Https'
+                    requireServerNameIndication: true
+                }
+            }                     
         ]
         requestRoutingRules: [
             {
@@ -193,7 +234,22 @@ resource appgw 'Microsoft.Network/ApplicationGateways@2020-06-01' = {
                         id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection',appgwName,'devPortalHttpsSettings')
                     }
                 }
-            }                     
+            }   
+            {
+                name: 'managementRule'
+                properties: {
+                    ruleType: 'Basic'
+                    httpListener: {
+                        id: resourceId('Microsoft.Network/applicationGateways/httpListeners',appgwName,'managementListener')
+                    }
+                    backendAddressPool: {
+                        id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools',appgwName,'managementPool')
+                    }
+                    backendHttpSettings: {
+                        id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection',appgwName,'managementHttpsSettings')
+                    }
+                }
+            }                               
         ]
         probes: [
             {
@@ -223,7 +279,21 @@ resource appgw 'Microsoft.Network/ApplicationGateways@2020-06-01' = {
                     minServers: 0
                     match: {}
                 }
-            }            
+            }    
+            {
+                name: 'managementProbe'
+                properties: {
+                    protocol: 'Https'
+                    host: managementFqdn
+                    path: '/servicestatus'
+                    interval: 30
+                    timeout: 30
+                    unhealthyThreshold: 3
+                    pickHostNameFromBackendHttpSettings: false
+                    minServers: 0
+                    match: {}
+                }
+            }                     
         ]
         enableHttp2: false
         webApplicationFirewallConfiguration: {
