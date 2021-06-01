@@ -81,7 +81,7 @@ Be sure your **Service Principal** have access to modify your Azure Public DNS Z
 $ .\letsEncrypt.ps1 -certNames *.contoso.com -acmeContact john@contoso.com -aZSubscriptionId <subId> -aZTenantId <tenantId> -aZAppUsername "<sp_username>" -aZAppPassword "<sp_password>" -pfxPassword "<pfxPassword>"
 ```
 
-** Be sure the username, password and certificate password are in double quotes**
+**Be sure the username, password and certificate password are in double quotes**
 
 When the command is finished, a new folder called **pa** will be created inside the scripts folder.
 
