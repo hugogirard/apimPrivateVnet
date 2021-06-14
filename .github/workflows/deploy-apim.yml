@@ -68,7 +68,7 @@ jobs:
 
       - name: Deploy APIM Resources
         id: deployapim
-        uses: Azure/arm-deploy@v1
+        uses: Azure/arm-deploy@main
         with:        
           scope: resourcegroup          
           subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
@@ -144,7 +144,7 @@ jobs:
 
       - name: Deploy On Premise Resources
         id: deployonprem
-        uses: Azure/arm-deploy@v1
+        uses: Azure/arm-deploy@main
         with:        
           scope: resourcegroup          
           subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
