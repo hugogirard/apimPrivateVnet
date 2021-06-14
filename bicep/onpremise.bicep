@@ -3,12 +3,12 @@ param onpremGatewayAddressSpace string
 param onpremWebAddressSpace string
 param apimSubnetCIDR string
 
-param adminUsername string {
-  secure: true
-}
-param adminPassword string {
-  secure: true
-}
+@secure()
+param adminUsername string
+
+@secure()
+param adminPassword string
+
 
 module network './modules/vnet/onpremise.bicep' = {
     name: 'network'
@@ -36,7 +36,7 @@ module vpn './modules/gateway/vpn.bicep' = {
   name: 'vpn'
   params: {
       location: resourceGroup().location
-      name: concat('vpn-prem-',uniqueString(resourceGroup().id))
+      name: 'vpn-prem-${uniqueString(resourceGroup().id)}'
       subnetId: network.outputs.subnetGw
       publicIpName: 'pip-gw-prem'
   }
