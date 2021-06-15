@@ -36,7 +36,7 @@ jobs:
                                               
       - name: Deploy AppGW Resources
         id: deployapim
-        uses: Azure/arm-deploy@v1.0.1
+        uses: Azure/arm-deploy@main
         with:        
           scope: resourcegroup          
           subscriptionId: ${{ secrets.SUBSCRIPTION_ID }}          
