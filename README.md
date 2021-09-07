@@ -58,7 +58,7 @@ Be sure you already configured your **Azure Public DNS Zone**.
 First create a service principal running the following command.
 
 ```Bash
-$ az ad sp create-for-rbac --name <ServicePrincipalName>
+$ az ad sp create-for-rbac --name <ServicePrincipalName> --sdk-auth --role contributor
 ```
 
 Take note of the output you will need it to create Github Secrets.
@@ -67,7 +67,7 @@ Now go to the folder scripts, there you have a powershell called **letsEncrypt.p
 
 This script will connect to your Azure Subscription passed in parameters and create a **TXT** challenge in your **Azure DNS Public Zone**.  
 
-First run this command
+First run this command in a PowerShell terminal
 
 ```bash
 $ Set-PAServer LE_PROD
@@ -85,9 +85,17 @@ $ .\letsEncrypt.ps1 -certNames *.contoso.com -acmeContact john@contoso.com -aZSu
 
 When the command is finished, a new folder called **pa** will be created inside the scripts folder.
 
-If you browse in it inside the last child folder of **acme-v02.api.letsencrypt.org** you will see those files.
+If you browse in it inside the last child folder of **acme-v02.api.letsencrypt.org** you will see those files. We want cert.pfx
 
 <img src="https://raw.githubusercontent.com/hugogirard/apimPrivateVnet/main/images/certificate.png">
+
+### Upload certificate to your certificate store
+Here are the steps to upload the cert you created in your project directory to your certificate store:
+1. In your folder explorer, navigate to the location of your cert:
+```
+C:\Users\myUser\source\repos\apimPrivateVnet\scripts\pa\acme-v02.api.letsencrypt.org\...
+```
+3. Right click on cert.cer -> Install Certificate
 
 # Creating Azure Resources
 
@@ -99,22 +107,22 @@ Here the list of all Github secrets that need to create before running the Githu
 
 | Secret Name          | Description                                           | Link
 | ---------------------| ------------------------------------------------------| ---------
-| ADMIN_VAULT_OBJECT_ID| This is the object ID of the super admin that you want to give access to KeyVault |
-| PA_TOKEN             | You need to have a personnal access token to write secrets after running the first github action.  You can find the information (here)[https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token].  The PA needs the public_repo scope.  This is needed for this specific (github action)[https://github.com/gliech/create-github-secret-action]. |
-| SP_AZURE_CREDENTIALS | Secret that contains the credential to run Az Login.  | (Action)[https://github.com/marketplace/actions/azure-login]
-| PUBLISHER_NAME       | The publisher name associated to APIM                 |
-| PUBLISHER_EMAIL      | The publisher email associated to APIM                |
-| ADMIN_USERNAME_SQL   | The username admin for the SQL Azure Database         |
+| ADMIN_VAULT_OBJECT_ID| This is the object ID of the super admin that you want to give access to KeyVault. In the Azure portal, go to Azure AD :arrow_right: Users :arrow_right: choose the admin user which you will be using to deploy the resources in this repo :arrow_right: Copy "Object ID"  value |
+| PA_TOKEN             | You will need to have a Personal Access Token to write secrets after running the first GitHub Action.  You can find the information [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).  The PA needs the public_repo scope.  This is needed for [this specific GitHub Action](https://github.com/gliech/create-github-secret-action) |
+| SP_AZURE_CREDENTIALS | Secret that contains the credential to run Az Login. Paste the entire JSON output from service principal creation above. The JSON object includes clientId, clientSecret, etc.| [GitHub Action](https://github.com/marketplace/actions/azure-login)
+| SP_PRINCIPAL_OBJECT_ID | The object ID of the service principal created above. This is the service principal that will enable you to run the GitHub Action and log into Azure |
+| PUBLISHER_NAME       | The publisher name associated to APIM  (e.g. Contoso)              |
+| PUBLISHER_EMAIL      | The publisher email associated to APIM  (e.g. myName@contoso.com)            |
+| ADMIN_USERNAME_SQL   | The admin username for the SQL Azure Database  (e.g. azureadmin)      |
 | ADMIN_PASSWORD_SQL   | The password for the SQL Azure Database               |
-| HOSTNAME             | The hostname of your domain like contoso.com          |
-| ADMIN_USERNAME       | The admin username of the Jumpbox and on prem VM      |
-| ADMIN_PASSWORD       | The password of the Jumpbox and on prem VM            |
-| DEV_PORTAL_GW_HOSTNAME | The DNS name of the Developer Portal                |
-| MANAGEMENT_GW_HOSTNAME | The hostname of the management plane                |
-| SUBSCRIPTION_ID      | The subscription ID where to deploy the Az Resources  |
-| SP_PRINCIPAL_OBJECT_ID | The object ID related to the SP that run the github action |
-| SUBSCRIPTION_ID      | The subscription ID where you run the github action |
-| SHARED_KEY           | The shared key needed for the VPN connection https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-vnet-vnet-resource-manager-portal
+| HOSTNAME             | The hostname of your domain (e.g. contoso.com)          |
+| ADMIN_USERNAME       | The admin username of the Jumpbox and on-premises VM  (e.g. azureadmin)    |
+| ADMIN_PASSWORD       | The password of the Jumpbox and on-premises VM            |
+| DEV_PORTAL_GW_HOSTNAME | The DNS name of the Developer Portal  (e.g. dev.contoso.com)              |
+| MANAGEMENT_GW_HOSTNAME | The hostname of the management plane   (e.g. mgt.contoso.com)              |
+| SUBSCRIPTION_ID      | The subscription ID for the Azure subscription used to deploy the resources in this repo  |
+| SHARED_KEY           | The shared key needed for the VPN connection. Provide a random key value here. | [Azure VPN Gateway documentation](https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-vnet-vnet-resource-manager-portal)
+
 
 ## Run Github Action Deploy APIM Infra
 
