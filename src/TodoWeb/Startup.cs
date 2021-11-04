@@ -38,7 +38,7 @@ namespace TodoWeb
             
             //Add authentication with Microsoft identity platform.
             services.AddMicrosoftIdentityWebAppAuthentication(Configuration)
-                    .EnableTokenAcquisitionToCallDownstreamApi(new string[] { Configuration["TodoList:TodoListScope"] })
+                    .EnableTokenAcquisitionToCallDownstreamApi(new string[]{"user.read" })
                     .AddInMemoryTokenCaches();
 
             services.AddHttpClient<IToDoListService, ToDoListService>();

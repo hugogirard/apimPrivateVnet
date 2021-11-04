@@ -67,7 +67,7 @@ namespace WeatherApi
             app.UseDeveloperExceptionPage();
 
             app.UseCors("default");
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseSwagger(c => c.SerializeAsV2 = true);
 
