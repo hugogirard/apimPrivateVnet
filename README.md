@@ -78,7 +78,7 @@ Now with the information retrieved when you created the **service principal** yo
 Be sure your **Service Principal** have access to modify your Azure Public DNS Zone.  If you want to use least priviledge refer to this [doc](https://github.com/rmbolger/Posh-ACME/blob/main/Posh-ACME/Plugins/Azure-Readme.md#create-a-custom-role).
 
 ```bash
-$ .\letsEncrypt.ps1 -certNames *.contoso.com -acmeContact john@contoso.com -aZSubscriptionId <subId> -aZTenantId <tenantId> -aZAppUsername "<sp_username>" -aZAppPassword "<sp_password>" -pfxPassword "<pfxPassword>"
+$ .\letsEncrypt.ps1 -certNames *.contoso.com -acmeContact john@contoso.com -aZSubscriptionId <subId> -aZTenantId <tenantId> -aZAppUsername "<sp_clientId>" -aZAppPassword "<sp_password>" -pfxPassword "<pfxPassword>"
 ```
 
 **Be sure the username, password and certificate password are in double quotes**
