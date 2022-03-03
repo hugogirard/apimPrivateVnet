@@ -23,6 +23,7 @@ $managedIdentityObjectId = (Get-AzWebApp -ResourceGroupName $resourceGroupName -
 
 Connect-AzureAD -TenantId $tenantID
 
+
 # Look up the details about the server app's service principal and app role.
 $serverServicePrincipal = (Get-AzureADServicePrincipal -Filter "DisplayName eq '$serverApplicationName'")
 $serverServicePrincipalObjectId = $serverServicePrincipal.ObjectId
